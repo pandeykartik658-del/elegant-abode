@@ -4,14 +4,13 @@ import { useEffect, useRef, useState } from "react";
 const MORPH_WORDS = ["tower.", "ground.", "light.", "silence."];
 
 const PHOTOS = [
-  { src: "https://images.unsplash.com/photo-1545153996-ec5f7b3b1c2c?w=1600&q=85&auto=format&fit=crop", name: "Meridian Tower", city: "SGP", year: "2023", plate: "03" },
-  { src: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=85&auto=format&fit=crop", name: "Halden Exchange", city: "OSL", year: "2022", plate: "07" },
-  { src: "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=1600&q=85&auto=format&fit=crop", name: "Kojima Offices", city: "TYO", year: "2024", plate: "11" },
+  { src: "https://images.unsplash.com/photo-1545153996-ec5f7b3b1c2c?w=1900&q=90&auto=format&fit=crop", name: "Meridian Tower", city: "SGP", year: "2023", plate: "03" },
+  { src: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1900&q=90&auto=format&fit=crop", name: "Halden Exchange", city: "OSL", year: "2022", plate: "07" },
+  { src: "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=1900&q=90&auto=format&fit=crop", name: "Kojima Offices", city: "TYO", year: "2024", plate: "11" },
 ];
 
 const EASE_QUINT = [0.16, 1, 0.3, 1] as const;
 const EASE_EXPO = [0.83, 0, 0.17, 1] as const;
-const COLS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
 function useClock(tz: string) {
   const [t, setT] = useState("");
@@ -19,13 +18,13 @@ function useClock(tz: string) {
     const fmt = () =>
       new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: tz, hour12: false }).format(new Date());
     setT(fmt());
-    const id = setInterval(() => setT(fmt()), 15000);
+    const id = setInterval(() => setT(fmt()), 30000);
     return () => clearInterval(id);
   }, [tz]);
   return t;
 }
 
-function useCountUp(target: number, start: boolean, duration = 900) {
+function useCountUp(target: number, start: boolean, duration = 1200) {
   const [v, setV] = useState(0);
   useEffect(() => {
     if (!start) return;
@@ -45,19 +44,11 @@ function useCountUp(target: number, start: boolean, duration = 900) {
 
 const stage: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE_QUINT } },
-};
-const drawX: Variants = {
-  hidden: { scaleX: 0 },
-  visible: { scaleX: 1, transition: { duration: 1.2, ease: EASE_QUINT } },
-};
-const drawY: Variants = {
-  hidden: { scaleY: 0 },
-  visible: { scaleY: 1, transition: { duration: 1.2, ease: EASE_QUINT } },
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: EASE_QUINT } },
 };
 
 export function Hero() {
@@ -66,37 +57,39 @@ export function Hero() {
   const [wordIdx, setWordIdx] = useState(0);
   const [photoIdx, setPhotoIdx] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [hoverPhoto, setHoverPhoto] = useState(false);
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 60, damping: 18, mass: 0.9 });
   const sy = useSpring(my, { stiffness: 60, damping: 18, mass: 0.9 });
-  const photoX = useTransform(sx, (v) => v * 12);
-  const photoY = useTransform(sy, (v) => v * 10);
+  const imgX = useTransform(sx, (v) => v * 18);
+  const imgY = useTransform(sy, (v) => v * 14);
 
-  const rx = useMotionValue(-100);
-  const ry = useMotionValue(-100);
+  const rx = useMotionValue(-200);
+  const ry = useMotionValue(-200);
   const rsx = useSpring(rx, { stiffness: 350, damping: 28, mass: 0.4 });
   const rsy = useSpring(ry, { stiffness: 350, damping: 28, mass: 0.4 });
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const photoParY = useTransform(scrollYProgress, [0, 1], [0, -120]);
-  const photoParScale = useTransform(scrollYProgress, [0, 1], [1, 1.06]);
-  const headlineY = useTransform(scrollYProgress, [0, 1], [0, -40]);
-  const numeralY = useTransform(scrollYProgress, [0, 1], [0, -300]);
-  const railOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
-  const gridOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const imgParY = useTransform(scrollYProgress, [0, 1], [0, -160]);
+  const imgParScale = useTransform(scrollYProgress, [0, 1], [1, 1.10]);
+  const headlineY = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const hudY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const hudOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const numeralY = useTransform(scrollYProgress, [0, 1], [0, -260]);
+  const shaftOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
   useEffect(() => {
     setMounted(true);
-    const a = setInterval(() => setWordIdx((i) => (i + 1) % MORPH_WORDS.length), 3400);
-    const b = setInterval(() => setPhotoIdx((i) => (i + 1) % PHOTOS.length), 8000);
+    const a = setInterval(() => setWordIdx((i) => (i + 1) % MORPH_WORDS.length), 4000);
+    const b = setInterval(() => setPhotoIdx((i) => (i + 1) % PHOTOS.length), 9000);
     return () => { clearInterval(a); clearInterval(b); };
   }, []);
 
   const tokyo = useClock("Asia/Tokyo");
   const ny = useClock("America/New_York");
-  const counted = useCountUp(17, mounted, 900);
+  const counted = useCountUp(17, mounted, 1200);
 
   const onMove = (e: React.MouseEvent) => {
     const r = ref.current?.getBoundingClientRect();
@@ -106,8 +99,8 @@ export function Hero() {
     const pr = photoRef.current?.getBoundingClientRect();
     if (pr) {
       const inside = e.clientX >= pr.left && e.clientX <= pr.right && e.clientY >= pr.top && e.clientY <= pr.bottom;
-      if (inside) { rx.set(e.clientX - pr.left); ry.set(e.clientY - pr.top); }
-      else { rx.set(-100); ry.set(-100); }
+      if (inside) { rx.set(e.clientX - pr.left); ry.set(e.clientY - pr.top); setHoverPhoto(true); }
+      else { rx.set(-200); ry.set(-200); setHoverPhoto(false); }
     }
   };
 
@@ -120,199 +113,251 @@ export function Hero() {
       variants={stage}
       initial="hidden"
       animate="visible"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-paper text-ink grain"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-ink-deep text-paper-warm"
+      style={{ ['--ink' as any]: 'var(--paper-warm)' }}
     >
-      {/* PLANE Z-3 — drafting grid */}
-      <motion.div style={{ opacity: gridOpacity }} className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+      {/* PLANE Z-3 — faint drafting grid on dark */}
+      <motion.div style={{ opacity: hudOpacity }} className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         <div className="relative h-full w-full max-w-[1500px] mx-auto px-6 md:px-12">
           <div className="absolute inset-0 grid grid-cols-8">
-            {COLS.map((c, i) => (
-              <div key={c} className="relative h-full">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="relative h-full">
                 <motion.div
-                  variants={drawY}
-                  className="absolute top-0 bottom-0 left-0 w-px bg-ink/[0.06] origin-top"
-                  style={{ transitionDelay: `${i * 60}ms` }}
+                  initial={{ scaleY: 0 }}
+                  animate={{ scaleY: 1 }}
+                  transition={{ duration: 1.4, delay: 0.1 + i * 0.05, ease: EASE_QUINT }}
+                  className="absolute top-0 bottom-0 left-0 w-px origin-top"
+                  style={{ background: 'rgba(255,235,200,0.05)' }}
                 />
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 0.35, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.45 + i * 0.05, ease: EASE_QUINT }}
-                  className="absolute top-2 left-1.5 font-mono-meta text-[9px] text-ink/30"
-                >
-                  {c}
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 0.35, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.45 + i * 0.05, ease: EASE_QUINT }}
-                  className="absolute bottom-2 left-1.5 font-mono-meta text-[9px] text-ink/30"
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </motion.div>
               </div>
             ))}
-            <motion.div
-              variants={drawY}
-              className="absolute top-0 bottom-0 right-0 w-px bg-ink/[0.06] origin-top"
-            />
           </div>
         </div>
       </motion.div>
 
-      {/* PLANE Z-2 — atmospheric numeral */}
+      {/* PLANE Z-2 — atmospheric numeral ghost */}
       <motion.div
         style={{ y: numeralY }}
         variants={fadeUp}
-        className="pointer-events-none absolute -right-[6vw] top-[6vh] z-0 select-none"
+        className="pointer-events-none absolute -right-[8vw] top-[2vh] z-0 select-none"
         aria-hidden
       >
         <span
-          className="font-fraunces italic block leading-none text-ink-04"
-          style={{ fontSize: "clamp(280px, 58vw, 1100px)", fontVariationSettings: '"wght" 300, "opsz" 144, "SOFT" 100' }}
+          className="font-fraunces italic block leading-none"
+          style={{ fontSize: "clamp(280px, 62vw, 1200px)", color: 'rgba(255,235,200,0.035)', fontVariationSettings: '"wght" 300, "opsz" 144, "SOFT" 100' }}
         >
           17
         </span>
       </motion.div>
 
-      {/* asymmetric brackets */}
-      <motion.div variants={drawY} className="pointer-events-none absolute top-20 left-6 md:left-12 z-10 origin-top">
-        <div className="w-6 h-px bg-ink/30" />
-        <div className="w-px h-6 bg-ink/30" />
-      </motion.div>
-      <motion.div variants={drawY} className="pointer-events-none absolute bottom-20 right-6 md:right-12 z-10 origin-bottom">
-        <div className="w-px h-6 bg-ink/30 ml-auto" />
-        <div className="w-6 h-px bg-ink/30 ml-auto" />
+      {/* PLANE Z-1 — full-bleed cinematic cover */}
+      <motion.div
+        ref={photoRef}
+        variants={fadeUp}
+        className="absolute z-10 overflow-hidden shadow-plate"
+        style={{
+          top: '14vh',
+          bottom: '14vh',
+          left: '4vw',
+          right: 'clamp(220px, 22vw, 380px)',
+        }}
+      >
+        {/* clip reveal */}
+        <motion.div
+          initial={{ clipPath: "inset(100% 0% 0% 0%)" }}
+          animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+          transition={{ duration: 1.4, delay: 0.3, ease: EASE_EXPO }}
+          className="absolute inset-0"
+        >
+          <AnimatePresence mode="popLayout">
+            <motion.img
+              key={photo.src}
+              src={photo.src}
+              alt={photo.name}
+              initial={{ scale: 1.18, opacity: 0 }}
+              animate={{ scale: 1.05, opacity: 1 }}
+              exit={{ scale: 1.10, opacity: 0 }}
+              transition={{ opacity: { duration: 1.2, ease: EASE_EXPO }, scale: { duration: 18, ease: 'linear' } }}
+              style={{ x: imgX, y: imgY }}
+              className="absolute inset-0 w-full h-full object-cover duotone-warm"
+            />
+          </AnimatePresence>
+
+          {/* warm multiply tint */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(40,22,12,0.45), rgba(10,8,6,0.65))', mixBlendMode: 'multiply' }} />
+          {/* dusk vignette */}
+          <div className="absolute inset-0 vignette-dusk" />
+          {/* parallax inner zoom */}
+          <motion.div style={{ y: imgParY, scale: imgParScale }} className="absolute inset-0 pointer-events-none" />
+
+          {/* drifting light shaft */}
+          <motion.div style={{ opacity: shaftOpacity }} className="absolute inset-0 overflow-hidden">
+            <div className="shaft-light" />
+          </motion.div>
+
+          {/* dust */}
+          <div className="dust-layer" />
+
+          {/* reticle */}
+          <motion.div
+            style={{ x: rsx, y: rsy, opacity: hoverPhoto ? 1 : 0 }}
+            className="pointer-events-none absolute top-0 left-0 z-30 transition-opacity duration-300"
+          >
+            <div className="-translate-x-1/2 -translate-y-1/2 relative">
+              <div className="w-10 h-10 rounded-full border border-brass/70 flex items-center justify-center">
+                <span className="block w-1 h-1 rounded-full bg-brass" />
+              </div>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 font-mono-meta text-[9px] text-brass whitespace-nowrap">VIEW · {photo.plate}</div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* hairline frame */}
+        <div className="absolute inset-0 pointer-events-none border" style={{ borderColor: 'rgba(255,235,200,0.10)' }} />
       </motion.div>
 
       {/* TOP RAIL */}
       <motion.div
-        style={{ opacity: railOpacity }}
-        className="absolute top-0 left-0 right-0 z-30 px-6 md:px-12 pt-6 flex items-center justify-between label-meta text-ink/70"
+        style={{ opacity: hudOpacity }}
+        className="absolute top-0 left-0 right-0 z-40 px-6 md:px-12 pt-6 flex items-center justify-between label-meta"
       >
-        <motion.div variants={fadeUp} className="flex items-center gap-4">
+        <motion.div variants={fadeUp} className="text-paper-warm/60">AXIS NOVA · ATELIER MMXXVI</motion.div>
+        <motion.div variants={fadeUp} className="hidden md:flex items-center gap-4 text-paper-warm/60">
           <span>TYO {tokyo || "—"}</span>
-          <span className="text-ink/30 hidden sm:inline">·</span>
-          <span className="hidden sm:inline">NYC {ny || "—"}</span>
+          <span className="text-paper-warm/25">·</span>
+          <span>NYC {ny || "—"}</span>
         </motion.div>
-        <motion.div variants={fadeUp} className="hidden md:flex items-center gap-3">
-          <motion.span
-            className="block w-1.5 h-1.5 rounded-full bg-clay"
-            animate={{ scale: [1, 1.6, 1], opacity: [1, 0.4, 1] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <span>14 live commissions</span>
-        </motion.div>
-        <motion.div variants={fadeUp}>SHEET 01 / 12</motion.div>
+        <motion.div variants={fadeUp} className="text-brass">SHEET 01 / 12</motion.div>
       </motion.div>
 
-      {/* STAGE */}
+      {/* HEADLINE — carved over the cover */}
       <motion.div
         style={{ y: headlineY }}
-        className="relative z-20 min-h-[100svh] flex items-center px-6 md:px-12 pt-28 pb-28"
+        className="relative z-30 min-h-[100svh] flex items-end pointer-events-none px-6 md:px-12 pb-[16vh]"
       >
-        <div className="grid grid-cols-12 gap-6 md:gap-12 w-full max-w-[1500px] mx-auto items-center">
-          {/* LEFT — matted plate */}
-          <motion.div
-            variants={fadeUp}
-            style={{ x: photoX, y: photoY }}
-            className="relative col-span-12 md:col-span-5 md:col-start-1"
-          >
-            {/* SECT. label */}
-            <motion.div
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 1.2, ease: EASE_QUINT }}
-              className="absolute -top-5 left-0 font-mono-meta text-[10px] text-ink/45"
-            >
-              SECT. A—A′
-            </motion.div>
-
-            <div className="mat-board">
-              <motion.div
-                ref={photoRef}
-                style={{ y: photoParY, scale: photoParScale }}
-                className="passe-partout relative aspect-[3/4] md:aspect-[4/5] overflow-hidden cursor-none shadow-plate"
+        <div className="w-full max-w-[1500px] mx-auto">
+          <div className="font-fraunces leading-[0.92] tracking-[-0.035em]" style={{ mixBlendMode: 'difference', color: 'var(--paper-warm)' }}>
+            <Reveal delay={0.85}>
+              <span
+                className="block uppercase text-shadow-deep"
+                style={{ fontSize: 'clamp(64px, 11vw, 200px)', fontVariationSettings: '"wght" 380, "opsz" 144, "SOFT" 30' }}
               >
-                <motion.div
-                  initial={{ clipPath: "inset(50% 6% 50% 6%)" }}
-                  animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
-                  transition={{ duration: 1.4, delay: 1.3, ease: EASE_EXPO }}
-                  className="absolute inset-0 overflow-hidden bg-ink/90"
+                Architecture
+              </span>
+            </Reveal>
+            <Reveal delay={0.97}>
+              <span
+                className="block italic pl-[4ch] -mt-[0.12em]"
+                style={{ fontSize: 'clamp(20px, 2.6vw, 44px)', opacity: 0.55, fontVariationSettings: '"wght" 300, "opsz" 144, "SOFT" 100' }}
+              >
+                of
+              </span>
+            </Reveal>
+          </div>
+
+          {/* morph word — clay glow, not blended (so the color reads pure) */}
+          <div className="relative mt-[-0.05em]">
+            <span className="block relative overflow-hidden font-fraunces" style={{ fontSize: 'clamp(56px, 9.5vw, 170px)', lineHeight: 0.95 }}>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={MORPH_WORDS[wordIdx]}
+                  initial={{ y: "100%" }}
+                  animate={{ y: "0%" }}
+                  exit={{ y: "-100%" }}
+                  transition={{ duration: 1.0, ease: EASE_EXPO }}
+                  className="italic block text-clay-glow"
+                  style={{ fontVariationSettings: '"wght" 420, "opsz" 144, "SOFT" 100', textShadow: '0 0 40px rgba(214, 120, 60, 0.35), 0 8px 30px rgba(0,0,0,0.5)' }}
                 >
-                  <AnimatePresence initial={false}>
-                    <motion.div
-                      key={photo.src + "-top"}
-                      initial={{ y: 0 }}
-                      exit={{ y: "-100%" }}
-                      transition={{ duration: 1.3, ease: EASE_EXPO }}
-                      className="absolute inset-x-0 top-0 h-1/2 overflow-hidden z-10"
-                    >
-                      <motion.img
-                        src={photo.src}
-                        alt={photo.name}
-                        animate={{ scale: [1.04, 1.10] }}
-                        transition={{ duration: 16, ease: "linear" }}
-                        className="absolute inset-x-0 top-0 w-full h-[200%] object-cover"
-                        style={{ filter: "grayscale(38%) contrast(1.06) sepia(0.06) brightness(0.92)" }}
-                      />
-                    </motion.div>
-                    <motion.div
-                      key={photo.src + "-bot"}
-                      initial={{ y: 0 }}
-                      exit={{ y: "100%" }}
-                      transition={{ duration: 1.3, ease: EASE_EXPO }}
-                      className="absolute inset-x-0 bottom-0 h-1/2 overflow-hidden z-10"
-                    >
-                      <motion.img
-                        src={photo.src}
-                        alt=""
-                        aria-hidden
-                        animate={{ scale: [1.04, 1.10] }}
-                        transition={{ duration: 16, ease: "linear" }}
-                        className="absolute inset-x-0 bottom-0 w-full h-[200%] object-cover"
-                        style={{ filter: "grayscale(38%) contrast(1.06) sepia(0.06) brightness(0.92)", objectPosition: "bottom" }}
-                      />
-                    </motion.div>
-                  </AnimatePresence>
+                  {MORPH_WORDS[wordIdx]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+            {/* drawing underline */}
+            <motion.div
+              key={`u-${wordIdx}`}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.9, delay: 0.25, ease: EASE_EXPO }}
+              className="origin-left h-[2px] bg-clay-glow mt-2 max-w-[60%]"
+              style={{ boxShadow: '0 0 18px rgba(214,120,60,0.45)' }}
+            />
+          </div>
 
-                  {/* paper tint */}
-                  <div className="absolute inset-0 z-20 bg-gradient-to-tr from-paper/15 via-transparent to-ink/10 mix-blend-multiply pointer-events-none" />
+          {/* tagline */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.0, delay: 2.1, ease: EASE_QUINT }}
+            className="mt-8 flex flex-col gap-2"
+            style={{ mixBlendMode: 'difference' }}
+          >
+            <p className="font-fraunces italic text-paper-warm/85" style={{ fontSize: 'clamp(15px, 1.25vw, 22px)', fontVariationSettings: '"wght" 350, "opsz" 60' }}>
+              Quiet volumes for loud cities.
+            </p>
+            <p className="font-mono-meta text-[10.5px] text-brass/80">
+              TOKYO · NEW YORK · SINCE MMIX
+            </p>
+          </motion.div>
+        </div>
+      </motion.div>
 
-                  {/* SECTION LINE A—A′ */}
-                  <div className="absolute inset-x-0 top-[38%] z-25 pointer-events-none" aria-hidden>
-                    <div className="relative">
-                      <motion.div
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 1, delay: 1.55, ease: EASE_QUINT }}
-                        className="h-px bg-clay/80 origin-left"
-                      />
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.4, delay: 2.4 }}
-                        className="absolute -top-3 -left-1 font-mono-meta text-[9px] text-clay"
-                      >A</motion.div>
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.4, delay: 2.4 }}
-                        className="absolute -top-3 -right-1 font-mono-meta text-[9px] text-clay"
-                      >A′</motion.div>
-                    </div>
-                  </div>
-                </motion.div>
+      {/* HUD COLUMN — right gutter */}
+      <motion.aside
+        style={{ y: hudY, opacity: hudOpacity }}
+        className="absolute z-40 right-6 md:right-12 top-[14vh] bottom-[14vh] hidden md:flex flex-col gap-5"
+        aria-hidden
+      >
+        <div className="w-px self-stretch" style={{ background: 'linear-gradient(to bottom, transparent, rgba(220,180,120,0.35), transparent)' }} />
+      </motion.aside>
 
-                {/* reticle */}
-                <motion.div style={{ x: rsx, y: rsy }} className="pointer-events-none absolute top-0 left-0 z-30">
-                  <div className="-translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-paper mix-blend-difference flex items-center justify-center">
-                    <span className="block w-px h-px bg-clay" />
-                  </div>
-                </motion.div>
-              </motion.div>
+      <motion.div
+        style={{ y: hudY, opacity: hudOpacity }}
+        className="absolute z-40 hidden md:flex flex-col gap-6 text-right"
+        // anchored inside the right gutter
+        // gutter starts at right: clamp(220, 22vw, 380); so HUD lives within
+        // right margin of 6/12px and width ~ gutter - margin
+        // we use right offset and a width
+      >
+        <div />
+      </motion.div>
+
+      {/* HUD content (positioned right column) */}
+      <motion.div
+        style={{ y: hudY, opacity: hudOpacity }}
+        className="absolute z-40 hidden md:block top-[14vh] bottom-[14vh] right-6 md:right-12"
+      >
+        <div className="flex flex-col h-full justify-between" style={{ width: 'clamp(170px, 16vw, 260px)' }}>
+          {/* TOP block */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-baseline justify-between">
+              <span className="font-mono-meta text-[10px] text-paper-warm/45">N°</span>
+              <span className="font-fraunces text-brass" style={{ fontSize: 'clamp(40px, 4.6vw, 78px)', lineHeight: 1, fontVariationSettings: '"wght" 350, "opsz" 144' }}>
+                {String(counted).padStart(2, "0")}
+              </span>
+              <span className="font-mono-meta text-[10px] text-paper-warm/45">/ XXVI</span>
             </div>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1.1, delay: 1.7, ease: EASE_EXPO }}
+              className="h-px bg-brass/50 origin-right"
+            />
+            <div className="flex flex-col gap-1 text-right">
+              <span className="font-mono-meta text-[10px] text-paper-warm/55">PROJECTS IN MOTION</span>
+              <span className="font-mono-meta text-[10px] text-paper-warm/35">EST. MMIX · TYO · NYC</span>
+            </div>
+          </div>
 
-            {/* PLATE caption beneath */}
+          {/* MID block */}
+          <div className="flex flex-col gap-4 text-right">
+            <div className="flex items-center justify-end gap-2">
+              <motion.span
+                className="block w-1.5 h-1.5 rounded-full bg-clay-glow"
+                animate={{ scale: [1, 1.7, 1], opacity: [1, 0.4, 1], boxShadow: ['0 0 0 rgba(214,120,60,0.6)', '0 0 16px rgba(214,120,60,0.6)', '0 0 0 rgba(214,120,60,0.6)'] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <span className="font-mono-meta text-[10px] text-paper-warm/75">14 LIVE COMMISSIONS</span>
+            </div>
             <AnimatePresence mode="wait">
               <motion.div
                 key={photo.name}
@@ -320,140 +365,50 @@ export function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.6, ease: EASE_QUINT }}
-                className="mt-6 flex items-center justify-between font-mono-meta text-[10px] text-ink/55"
+                className="font-mono-meta text-[10px] text-paper-warm/55 flex flex-col gap-1"
               >
                 <span>PL. {photo.plate} / {photo.name.toUpperCase()}</span>
-                <span>{photo.city} · {photo.year}</span>
+                <span className="text-paper-warm/35">{photo.city} · {photo.year}</span>
               </motion.div>
             </AnimatePresence>
-          </motion.div>
+          </div>
 
-          {/* RIGHT — typographic stack */}
-          <div className="relative col-span-12 md:col-span-6 md:col-start-7 flex flex-col gap-8 md:gap-10">
-            {/* Numeral anchor */}
-            <div className="flex items-baseline justify-between gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.65, ease: EASE_QUINT }}
-                className="font-mono-meta text-[10px] text-ink/45"
-              >
-                N°&nbsp;&nbsp;{String(counted).padStart(2, "0")} / XXVI
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.65, ease: EASE_QUINT }}
-                className="font-mono-meta text-[10px] text-ink/45"
-              >
-                ELEV. NORTH
-              </motion.div>
+          {/* BOTTOM block */}
+          <div className="flex flex-col gap-3 text-right">
+            <div className="flex items-center justify-end gap-3">
+              <span className="font-mono-meta text-[10px] text-brass/70">ELEV. NORTH</span>
+              <CompassRose />
             </div>
             <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1.1, delay: 0.85, ease: EASE_EXPO }}
-              className="h-px bg-[var(--hairline-strong)] origin-left -mt-6"
-            />
-
-            <div className="font-fraunces leading-[0.95] tracking-[-0.025em]" style={{ fontVariationSettings: '"wght" 350, "opsz" 144, "SOFT" 30' }}>
-              <Line delay={1.0}>
-                <span className="block text-[13vw] md:text-[7.6vw] lg:text-[6.8vw] uppercase text-ink">
-                  Architecture
-                </span>
-              </Line>
-              <Line delay={1.14}>
-                <span
-                  className="block text-[7vw] md:text-[3.8vw] lg:text-[3.4vw] italic text-ink/35 pl-[3ch] -mt-2"
-                  style={{ fontVariationSettings: '"wght" 300, "opsz" 144, "SOFT" 100' }}
-                >
-                  of
-                </span>
-              </Line>
-
-              {/* morph word */}
-              <span className="block h-[0.95em] relative overflow-hidden text-[13vw] md:text-[7.6vw] lg:text-[6.8vw] -mt-1">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={MORPH_WORDS[wordIdx]}
-                    initial={{ y: "100%" }}
-                    animate={{ y: "0%" }}
-                    exit={{ y: "-100%" }}
-                    transition={{ duration: 0.95, ease: EASE_EXPO }}
-                    className="italic text-clay block"
-                    style={{ fontVariationSettings: '"wght" 400, "opsz" 144, "SOFT" 100' }}
-                  >
-                    {MORPH_WORDS[wordIdx]}
-                  </motion.span>
-                </AnimatePresence>
-              </span>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 2.25, ease: EASE_QUINT }}
-              className="flex items-start gap-5 mt-2"
+              animate={{ y: [0, 6, 0], opacity: [0.4, 0.9, 0.4] }}
+              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+              className="font-mono-meta text-[10px] text-paper-warm/60"
             >
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.9, delay: 2.25, ease: EASE_QUINT }}
-                className="w-16 h-px bg-clay origin-left mt-3 shrink-0"
-              />
-              <div className="max-w-sm">
-                <p className="font-fraunces italic text-base md:text-lg text-ink-warm leading-snug">
-                  Quiet volumes for loud cities.
-                </p>
-                <p className="font-mono-meta text-[10px] text-ink/45 mt-2">
-                  TYO · NYC · since MMIX
-                </p>
-              </div>
+              SCROLL ↓
             </motion.div>
           </div>
         </div>
       </motion.div>
 
-      {/* COMPASS ROSE */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 2.4, ease: EASE_QUINT }}
-        style={{ opacity: railOpacity }}
-        className="absolute bottom-20 right-6 md:right-24 z-30 pointer-events-none"
-        aria-hidden
-      >
-        <CompassRose />
-      </motion.div>
-
       {/* BOTTOM RAIL */}
       <motion.div
-        style={{ opacity: railOpacity }}
-        className="absolute bottom-0 left-0 right-0 z-30 px-6 md:px-12 pb-6 flex items-end justify-between label-meta text-ink/55"
+        style={{ opacity: hudOpacity }}
+        className="absolute bottom-0 left-0 right-0 z-40 px-6 md:px-12 pb-6 flex items-center justify-between label-meta text-paper-warm/45"
       >
-        <motion.div variants={fadeUp} className="flex items-center gap-3">
-          <span className="text-ink/30">+</span>
-          <span>Selected Works · MMXVIII — MMXXIV</span>
-        </motion.div>
-        <motion.div variants={fadeUp} className="flex items-center gap-3">
-          <span>Scroll</span>
-          <motion.span
-            animate={{ y: [0, 4, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          >↓</motion.span>
-        </motion.div>
+        <motion.div variants={fadeUp}>SECT. A—A′</motion.div>
+        <motion.div variants={fadeUp} className="hidden sm:block">© AXIS NOVA — ALL PLATES RESERVED</motion.div>
       </motion.div>
     </motion.section>
   );
 }
 
-function Line({ children, delay }: { children: React.ReactNode; delay: number }) {
+function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
     <span className="block overflow-hidden">
       <motion.span
         initial={{ y: "105%" }}
         animate={{ y: "0%" }}
-        transition={{ duration: 1.1, delay, ease: EASE_QUINT }}
+        transition={{ duration: 1.05, delay, ease: EASE_EXPO }}
         className="block"
       >
         {children}
@@ -465,25 +420,18 @@ function Line({ children, delay }: { children: React.ReactNode; delay: number })
 function CompassRose() {
   return (
     <motion.svg
-      width="56"
-      height="56"
-      viewBox="0 0 56 56"
-      fill="none"
+      width="32" height="32" viewBox="0 0 32 32"
       animate={{ rotate: 360 }}
       transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-      className="text-ink/40"
+      className="text-brass/70"
     >
-      <circle cx="28" cy="28" r="27" stroke="currentColor" strokeWidth="0.5" />
-      <circle cx="28" cy="28" r="18" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1 3" />
-      {/* N E S W ticks */}
-      <line x1="28" y1="2" x2="28" y2="10" stroke="currentColor" strokeWidth="0.75" />
-      <line x1="28" y1="46" x2="28" y2="54" stroke="currentColor" strokeWidth="0.5" />
-      <line x1="2" y1="28" x2="10" y2="28" stroke="currentColor" strokeWidth="0.5" />
-      <line x1="46" y1="28" x2="54" y2="28" stroke="currentColor" strokeWidth="0.5" />
-      {/* needle */}
-      <path d="M28 8 L31 28 L28 26 L25 28 Z" fill="currentColor" opacity="0.7" />
-      <path d="M28 48 L31 28 L28 30 L25 28 Z" fill="currentColor" opacity="0.25" />
-      <text x="28" y="6" textAnchor="middle" fontSize="5" fill="currentColor" fontFamily="monospace" letterSpacing="0.1em">N</text>
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" strokeWidth="0.6" />
+      <circle cx="16" cy="16" r="1" fill="currentColor" />
+      <line x1="16" y1="2" x2="16" y2="7" stroke="currentColor" strokeWidth="0.6" />
+      <line x1="16" y1="25" x2="16" y2="30" stroke="currentColor" strokeWidth="0.6" />
+      <line x1="2" y1="16" x2="7" y2="16" stroke="currentColor" strokeWidth="0.6" />
+      <line x1="25" y1="16" x2="30" y2="16" stroke="currentColor" strokeWidth="0.6" />
+      <polygon points="16,4 14.5,9 16,8 17.5,9" fill="currentColor" />
     </motion.svg>
   );
 }

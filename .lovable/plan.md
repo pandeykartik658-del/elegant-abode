@@ -1,148 +1,188 @@
 
-# Hero v5 — "Drafting Table"
+# Hero v6 — "Cinematic Atelier"
 
-The current hero reads like a clean editorial layout but not like *architecture*. v5 fixes three weaknesses you called out:
-
-1. **Architectural depth** — there's no sense of plan/section/elevation, no measured space, no layered material.
-2. **Aesthetic feel** — the photo is a flat rectangle floating beside text. No tactility, no print quality, no atmosphere transitioning the eye between planes.
-3. **Typography (7/10 → 10/10)** — Inter @ weight 200 is generic for a luxury practice. The display word "ARCHITECTURE" is wide and limp. Hierarchy lacks an anchor numeral.
-
-Below is the redesign. Selected Works stays as-is (you like it).
+You've said the matted-paper monograph reads quiet but flat. The cure isn't more drafting marks — it's **stage lighting, scale contrast, and a darker canvas**. v6 keeps the architectural rigor of v5 but trades the small right-side photo plate for a **full-bleed cinematic cover** with the type carved into it. Selected Works stays untouched.
 
 ---
 
-## 1. Typography — change the voice, not just the size
+## Diagnosis (why current hero feels 7/10)
 
-Current display = `Inter wght:200 -0.05em`. That's *Apple keynote*, not *architecture monograph*. Architects use cut serifs, geometric grotesques, or ultra-condensed display faces. We'll move to a true editorial pairing:
+1. **Single tonal range.** Everything is paper-on-paper. No deep blacks, no glow → no depth.
+2. **Photo is too small.** A 4/5 plate beside text feels like a thumbnail, not a hero image.
+3. **Color discipline is too disciplined.** Clay appears 4 times in tiny doses — invisible.
+4. **Headline floats.** "ARCHITECTURE / of / tower." has no anchor against the busy grid.
+5. **No volumetric depth.** Drafting grid is flat overlay; mat board is a 2D offset. There's no light, no atmosphere, no z-axis cue.
 
-| role | current | new | why |
-|------|---------|-----|-----|
-| display headline | Inter 200 | **Fraunces Variable** (`opsz:144, wght:300, SOFT:30`) high-contrast roman caps | already loaded, gives Didone-like contrast — instantly "monograph" |
-| morph italic word | Fraunces italic | **Fraunces italic** with `opsz:144, wght:400, SOFT:100` + optical kerning | softer, more handwritten |
-| meta / labels | Inter caps tracked | **JetBrains Mono** 400, tracked `0.18em` | engineers' caption — drafting feel |
-| body micro | Inter | Inter 400 (kept) | unchanged |
+---
 
-Add JetBrains Mono via `@fontsource-variable/jetbrains-mono` (`bun add` it during build). Update `.label-meta` to use the mono.
+## Direction — "Studio at dusk"
 
-Headline composition becomes:
+Think: a curated monograph spread + a Kogonada film still. **Warm ink-black canvas**, a single shaft of warm window light, a giant cover image that the type is *cut into* with `mix-blend-mode: difference`, and one decisive clay accent that actually reads.
 
 ```text
-N°               XVII             ◂ mono, ink/30, drafted left
-─────────────────────────────     ◂ 1px hairline rule, draws across
-ARCHITECTURE                      ◂ Fraunces ROMAN caps, contrast
-   of                             ◂ Fraunces italic, ink/35, indented
-TOWER.                            ◂ Fraunces italic, clay (morph word)
-─── 64px clay rule
-Quiet volumes for loud cities.    ◂ italic body, single line
-TYO · NYC · since MMIX
+┌──────────────────────────────────────────────────────────────┐
+│  AXIS NOVA · ATELIER 2026               TYO 14:22 · NYC 01:22│
+│  ─────────────────────────────────────────────────────────── │
+│                                                              │
+│   ╔═══════════════════════════════════════╗                  │
+│   ║                                       ║   N° 17          │
+│   ║                                       ║   ──────         │
+│   ║       [ Cover image, full-bleed ]    ║   PROJECTS        │
+│   ║                                       ║   IN MOTION      │
+│   ║   ARCHITECTURE                        ║                  │
+│   ║       of                              ║   ↓ scroll       │
+│   ║   ⟨ tower ⟩  ← clay, italic, morph   ║                  │
+│   ║                                       ║                  │
+│   ║   Quiet volumes for loud cities.      ║                  │
+│   ╚═══════════════════════════════════════╝                  │
+│                                                              │
+│  PL.03 / MERIDIAN TOWER · SGP 2023        SECT.A-A′  ◐ 60s   │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-Removing the boxed sans "ARCHITECTURE" in favor of high-contrast Fraunces roman is the single biggest aesthetic upgrade. It makes the word read as engraved/printed instead of typed.
+---
+
+## 1. Palette — introduce real depth
+
+Add (don't replace):
+
+```
+--ink-deep:    oklch(0.18 0.018 60)   /* near-black, warm */
+--ink-night:   oklch(0.12 0.012 50)   /* cinematic shadow */
+--clay-glow:   oklch(0.74 0.17 45)    /* brighter clay for dark bg */
+--brass:       oklch(0.78 0.12 80)    /* warm highlight accent */
+--paper-warm:  oklch(0.96 0.018 80)   /* the existing paper, kept */
+```
+
+Hero becomes a **dark stage** (`bg-ink-deep`) with paper-warm type. The rest of the page (Marquee, Philosophy, Selected Works…) keeps the paper background — so the hero reads as a single cinematic plate before the monograph begins. This contrast alone adds the "vibrancy" you want without going maximalist.
 
 ---
 
-## 2. Architectural depth — measured, not just deep
+## 2. Composition — full-bleed cover with carved type
 
-We add three architecture-native motifs that flat editorial layouts don't have:
+**Replace the 5/12 photo + 6/12 text grid** with a single layered stage:
 
-### a) Drafted tick-mark grid (background plane Z-3)
-A faint 8-column architectural grid drawn in 1px hairlines across the entire viewport with **measurement ticks** every 80px (`A | B | C | D | E | F | G | H`). Opacity `ink/8`. Animates draw-in left→right over 1.4s on load. Becomes invisible structure that "explains" why elements align where they do — pure draftsmanship.
+- **Layer A (back, 0):** dark `--ink-deep` canvas + 7% warm grain.
+- **Layer B (z-10):** **full-bleed cover image** clipped to a giant 12-column matted plate with 6vw inset on left and 14vw inset on right (asymmetric framing — leaves a vertical "margin gutter" on the right for the HUD column). Heavy duotone treatment: image desaturated to ~45%, multiplied with a warm `#1a1410` overlay → it reads as one tonal family with the canvas. Subtle radial vignette focused on lower-left.
+- **Layer C (z-20):** **shaft of light** — a 30° rotated, 240px-wide white→transparent gradient strip slowly drifting across the image (12s loop, 8% opacity peak). This is the single biggest cinematic upgrade: it gives the scene volumetric depth like raked dusk light through a window.
+- **Layer D (z-30):** **headline carved into the image** using `mix-blend-mode: difference` + `color: var(--paper-warm)`. The type changes brightness depending on what's behind it — instant photographic depth.
+- **Layer E (z-40):** HUD rail, numeral counter, plate caption, clocks — all in mono on top.
 
-### b) Section / Elevation labels
-Top-left of the photo gets a tiny label `SECT. A-A` and bottom of the right column gets `ELEV. NORTH`. These are blueprint vocabulary — they make the page feel like a sheet pulled from a project set.
-
-### c) Compass rose (lower-right of hero)
-A 56px architect's compass: a circle with N/E/S/W ticks, one slow continuous rotation (60s loop). Drawn with SVG at `ink/30`. Placed where the bottom rail meets the right margin. Quiet but unmistakable.
-
----
-
-## 3. Photo plane — from rectangle to **window**
-
-Three changes layer real depth into the image:
-
-- **Mat board behind the frame**: a `paper` rectangle offset 24px down/right behind the photo with a `1px ink/15` border + soft drop. Makes the image feel printed and mounted, not embedded.
-- **Section line through the photo**: a 1px clay-tinted horizontal cut at 38% from the top, with two tick marks `A` and `A'` at the ends. This is the line referenced by `SECT. A-A` — a tiny inside joke, but it visually slices the image into thirds (the architectural rule of thirds done literally).
-- **Plate caption** sits *under* the photo (not vertically beside) in mono small caps:
-  ```
-  PL. 03 / MERIDIAN TOWER          SGP · 2023 · 47°F
-  ```
-  More gallery, less rotated label. The vertical `writing-mode` rotation reads as a gimmick on second visit.
-
-Image transition stays the split-curtain wipe but slows to **1.3s** with a darker mid-frame: a 60ms paper-flash between exits (the outgoing image briefly reveals paper behind before the incoming arrives — like a slide projector advancing). This adds a beat of darkness that is far more cinematic than direct cross-cut.
+The drafting grid stays but at `ink/[0.04]` over the dark canvas; ticks switch to `--brass` at 25% opacity so they whisper instead of disappear.
 
 ---
 
-## 4. Color & material discipline
+## 3. Typography — bigger, bolder, anchored
 
-Current paper is fine. Add:
+| element | change |
+|---------|--------|
+| "ARCHITECTURE" | from `7.6vw` → `10vw` desktop, `wght:380, opsz:144, SOFT:30`, paper-warm. Tracks `-0.04em`. The single largest visual on the page. |
+| "of" | smaller (`2.4vw`), italic, indented `4ch`, paper-warm at 50% opacity. Acts as a comma. |
+| morph word ("tower.") | **clay-glow**, italic, `9vw`, with a 1.5px hairline underline that draws across as the word lands. This is the 5/5 moment — the only saturated color on screen. |
+| tagline | "Quiet volumes for loud cities." — `Fraunces italic` at 1.2vw, paper-warm/65, sits below morph. |
+| supporting line | "Tokyo · New York · since MMIX" in mono, brass tint at 60%. |
 
-- `--ink-warm: oklch(0.22 0.02 70)` — slightly warmer ink for body, leaving the cool ink for headlines. Splits the type into two material tones (graphite vs ink) which is what monograph plates actually do.
-- `--paper-shadow: oklch(0.92 0.014 84)` — for the mat board so it reads as a different paper stock, not the same surface.
-
-Clay stays the single accent. Used in: morph word, section line `A—A'`, 64px tagline rule, the live-dot. Four uses, all justified.
+The headline now occupies ~55% of the screen height instead of ~30%. That's what reads as "vibrant" — typographic authority, not hue saturation.
 
 ---
 
-## 5. Synchronized motion (refined)
+## 4. The HUD column (right gutter)
 
-Sequence — each beat clearly handed off, no overlap fog:
+A vertical 14vw rail anchored top-to-bottom on the right, separated from the cover by a 1px brass hairline. Contents top→bottom:
+
+```
+N° 17 / XXVI                    ← counted, brass, mono
+──────────                       ← brass hairline draws L→R
+PROJECTS IN MOTION               ← mono micro caps, paper/55
+                                 (whitespace)
+TYO  14:22                       ← live clock
+NYC  01:22
+                                 (whitespace)
+● 14 LIVE COMMISSIONS            ← clay-glow pulse dot
+                                 (whitespace)
+SECT. A—A′                       ← mono micro
+ELEV. NORTH ◐                    ← compass rose icon (already built), brass
+                                 (push down)
+SCROLL ↓                         ← bottom-anchored, paper/40
+```
+
+This consolidates every meta-detail into one disciplined column instead of scattering them across four corners. Reads as the title-block of an architectural drawing sheet.
+
+---
+
+## 5. Motion — choreographed in 6 acts (not 12)
+
+12 beats was a lot. Compress to 6 distinct acts that the eye actually follows. Each act has a clear lead element + supporting motion.
 
 ```text
-beat  t      element                                   ease
-────  ─────  ───────────────────────────────────────  ────────
-0     0.00s  paper fade-in                            linear
-1     0.15s  drafting grid lines draw L→R             quint-out
-2     0.45s  ticks letter in (A B C D E F G H)        quint-out
-3     0.65s  HUD top + bottom rails                   quint-out
-4     0.85s  N° XVII numeral counts up 0→17           expo-out
-5     1.00s  rule under numeral draws L→R             expo-out
-6     1.15s  photo mat fades in                       quint-out
-7     1.30s  passe-partout opens (clip-path)          expo-in-out
-8     1.55s  SECT. A-A line draws across photo        quint-out
-9     1.65s  headline lines reveal (stagger 140ms)    quint-out
-10    2.10s  morph word arrives                       expo-out
-11    2.25s  64px clay rule + tagline                 quint-out
-12    2.40s  compass rose fades + starts rotating     linear
+ACT  t      LEAD                          SUPPORT
+───  ─────  ────────────────────────────  ─────────────────────────
+1    0.00s  Canvas paper-warm flash       Grid hairlines fade to 4%
+2    0.30s  Cover image reveals           Top-down clip (1.0s expo)
+3    0.85s  Headline lines stagger up     "of" indents in 80ms after
+4    1.40s  Morph word + underline draw   Clay glow 0→1, underline L→R
+5    1.70s  HUD column draws top→bottom   Numeral counts 0→17, hairline draws
+6    2.10s  Light shaft begins drifting   Tagline + scroll cue fade in
 ```
 
-Continuous loops (independent):
-- Photo Ken Burns 1.04→1.10 over 16s
-- Word morph every 3.4s
+Continuous loops:
+- **Light shaft drift** (12s linear, infinite) — the cinematic heartbeat
+- Image Ken Burns 1.05→1.12 over 18s
+- Word morph every 4s (slowed from 3.4 — gives each word more presence)
 - Live dot pulse 2.4s
-- Compass 60s rotation
-- Tokyo/NYC clocks 15s tick
+- Compass rose 60s rotation
+- Clocks 30s tick
 
-Scroll-out parallax: numeral leaves fastest (`y:-300`), photo `y:-120` + `scale:1.06`, headline `y:-40` per-line bottom-up, grid fades to 0, rails fade first.
+Scroll-out parallax stays but tuned: image `y:-160 scale:1.10`, headline `y:-50`, HUD `y:-90 opacity→0`, light shaft fades first.
+
+Cursor on the image becomes a **brass crosshair reticle** with a tiny `VIEW` label that fades in on hover — replaces the current diff-blend dot.
 
 ---
 
-## 6. Files to change
+## 6. The one decisive accent
 
-- **`src/components/landing/Hero.tsx`** — full rewrite per spec above. Add `<DraftingGrid />`, `<CompassRose />`, `<NumeralCounter />`, `<SectionLine />` as local components within the file.
-- **`src/styles.css`** —
-  - Add `@import "@fontsource-variable/jetbrains-mono/index.css";`
-  - Add `.font-mono-meta` utility (JetBrains Mono 400, tracked)
-  - Update `.label-meta` to use mono
-  - Add `--ink-warm`, `--paper-shadow` tokens
-  - Add `.mat-board` utility (offset shadow rectangle)
-  - Add `.shadow-plate` (softer than `shadow-print`)
-- **`package.json` / install** — `bun add @fontsource-variable/jetbrains-mono`
+**Clay-glow appears in exactly three places, each consequential:**
 
-No other components touched. Marquee, Philosophy, FeaturedProjects, WorksIndex, ClosingFrame stay exactly as they are.
+1. The morph word (the verb of the headline)
+2. A 1.5px underline beneath the morph word (draws on entry)
+3. The 14-live-commissions pulse dot in the HUD
+
+That's it. No section line on the photo (we're losing it — it competed with the headline). No clay tagline rule. Three uses, each large enough to actually carry color. **Brass** carries the secondary warm work (compass, numeral, hairline under N°17) so clay isn't asked to do two jobs.
+
+---
+
+## 7. Files to change
+
+- **`src/components/landing/Hero.tsx`** — restructure into the layered stage above. Remove the 5/7 photo+text grid; remove the SECT. A-A′ section line on the photo; remove asymmetric corner brackets (HUD column makes them redundant); add `<LightShaft />`, `<HudColumn />` local components; keep `<DraftingGrid />`, `<CompassRose />`, `<NumeralCounter />`.
+- **`src/styles.css`** — add `--ink-deep`, `--ink-night`, `--clay-glow`, `--brass`, `--paper-warm` tokens. Add utilities: `.bg-ink-deep`, `.text-paper-warm`, `.text-clay-glow`, `.text-brass`, `.bg-brass`, `.border-brass`. Add `.duotone-warm` utility (filter: `grayscale(55%) sepia(0.18) contrast(1.08) brightness(0.78)`). Add `.shaft-light` keyframe (translateX + slight rotate, 12s linear infinite). Update `.mat-board` to work on dark.
+- **`src/routes/index.tsx`** — no change. The hero owns its dark canvas; the page below stays paper.
+
+No other components touched. **Marquee, Philosophy, FeaturedProjects, WorksIndex, ClosingFrame stay exactly as they are.**
 
 ---
 
 ## What you'll see vs. now
 
-| signal | now | after v5 |
-|--------|-----|----------|
-| typography voice | minimalist tech | engraved monograph |
-| background | paper + faded "17" | paper + 8-col drafted grid + "17" |
-| photo | floating rectangle | matted plate with section cut |
-| metadata font | Inter caps | mono caps (drafting style) |
-| architectural cues | none | grid ticks, SECT./ELEV. labels, compass rose, section line |
-| numeral hierarchy | static "N° XVII / 26" in corner | giant counted numeral as primary anchor with rule below |
-| photo transition | split wipe | split wipe + 60ms paper flash (slide-projector beat) |
-| accents | 4 clay touches | 4 clay touches (disciplined) |
+| signal | now (v5) | after v6 |
+|--------|----------|----------|
+| canvas | warm paper | warm ink-deep — instant cinema |
+| photo | 4/5 plate, ~30% of viewport | full-bleed cover, ~85% |
+| photo treatment | grayscale 38% + multiply | duotone warm + radial vignette + drifting light shaft |
+| headline | `7.6vw` floating beside photo | `10vw` carved into photo via blend-mode |
+| morph word | clay italic | **clay-glow** italic + drawn underline (the moment) |
+| meta | scattered across 4 corners | unified HUD column, drawing sheet title-block |
+| color saturation | 4 tiny clay dots, lost | 3 decisive uses of clay-glow + brass warm support |
+| motion sequence | 12 beats (busy) | 6 choreographed acts |
+| ambient motion | grid + numeral + dot + clock + compass | + drifting volumetric light shaft (the heartbeat) |
+| depth cues | mat offset + parallax | mat + parallax + duotone vignette + light shaft + blend-mode type |
 
-If you want to dial back any element say the word and I'll trim it: **"no grid"** removes the drafting grid; **"no compass"** removes the rose; **"keep label vertical"** keeps the rotated photo caption.
+---
+
+## Dial-back switches (say the word)
+
+- **"keep paper"** — keep the warm paper canvas, apply the rest (cover, blend-mode type, light shaft) on light. Less cinematic, more editorial.
+- **"no light shaft"** — drop the drifting gradient. Calmer.
+- **"no carve"** — type sits on top of image with a soft scrim instead of `mix-blend-mode: difference`.
+- **"more clay"** — extend clay-glow into the numeral and one HUD label.
+
+If you approve as-is I'll implement v6 in the next turn.
