@@ -191,14 +191,13 @@ export function Hero() {
           </motion.div>
 
           {/* DIVIDER RULE */}
-          <div className="hidden md:flex md:col-span-[0.3] relative items-stretch justify-center" style={{ flexBasis: 1 }}>
-            <motion.div
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ duration: 1.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="w-px bg-clay/60 origin-top h-full"
-            />
-          </div>
+          <motion.div
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ duration: 1.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="hidden md:block w-px bg-clay/60 origin-top self-stretch"
+            style={{ gridColumn: "span 0 / span 0" }}
+          />
 
           {/* RIGHT — type */}
           <div className="col-span-12 md:col-span-7 flex flex-col justify-between">
