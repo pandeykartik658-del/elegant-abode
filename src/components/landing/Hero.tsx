@@ -164,7 +164,7 @@ export function Hero() {
 }
 
 function Blueprint({ progress }: { progress: any }) {
-  const draw = {
+  const draw: any = {
     initial: { pathLength: 0, opacity: 0 },
     animate: (i: number) => ({
       pathLength: 1,
