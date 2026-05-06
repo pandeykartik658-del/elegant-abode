@@ -229,3 +229,8 @@
   animation: slow-pan 18s ease-out forwards;
 }
 
+@media (pointer: fine) {
+  html.cursor-custom, html.cursor-custom * { cursor: none !important; }
+}
+
+
