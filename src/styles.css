@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap');
 @import "@fontsource-variable/fraunces/index.css";
 @import "@fontsource-variable/fraunces/wght-italic.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -74,6 +75,8 @@
   --bone: oklch(0.945 0.012 84);
   --mist: oklch(0.88 0.013 80);
   --clay: oklch(0.66 0.13 42);
+  --ink-warm: oklch(0.22 0.02 70);
+  --paper-shadow: oklch(0.92 0.014 84);
   --hairline: oklch(0.16 0.005 60 / 0.14);
   --hairline-strong: oklch(0.16 0.005 60 / 0.32);
   --accent-warm: oklch(0.66 0.13 42);
@@ -175,11 +178,19 @@
     letter-spacing: -0.01em;
   }
   .label-meta {
-    font-size: 11px;
-    letter-spacing: 0.22em;
+    font-family: 'JetBrains Mono Variable', ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     font-weight: 400;
+    font-feature-settings: "ss01";
   }
+  .font-mono-meta {
+    font-family: 'JetBrains Mono Variable', ui-monospace, monospace;
+    letter-spacing: 0.18em;
+    font-weight: 400;
+  }
+  .text-ink-warm { color: var(--ink-warm); }
   .hairline { border-color: var(--hairline); }
   .hairline-b { border-bottom: 1px solid var(--hairline); }
   .hairline-t { border-top: 1px solid var(--hairline); }
@@ -236,6 +247,20 @@
 @layer utilities {
   .shadow-print {
     box-shadow: inset 0 0 80px rgba(14, 14, 12, 0.28), 0 30px 60px -30px rgba(14, 14, 12, 0.35);
+  }
+  .shadow-plate {
+    box-shadow: 0 24px 50px -28px rgba(14, 14, 12, 0.35), 0 4px 12px -6px rgba(14, 14, 12, 0.18);
+  }
+  .mat-board {
+    position: relative;
+  }
+  .mat-board::after {
+    content: "";
+    position: absolute;
+    inset: 18px -18px -18px 18px;
+    background: var(--paper-shadow);
+    border: 1px solid var(--hairline);
+    z-index: -1;
   }
   .passe-partout {
     position: relative;

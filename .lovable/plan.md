@@ -1,107 +1,148 @@
 
-# Hero v4 — "Editorial Depth"
+# Hero v5 — "Drafting Table"
 
-The current hero has the right ingredients but reads flat: too many competing accents (clay rule + clay dot + clay word + clay corner ticks + clay counter), the photo and type live on the same plane with no atmospheric depth, and the entrance animations all fire on similar timings so nothing feels *led*. v4 rebuilds it as a single, breathing composition.
+The current hero reads like a clean editorial layout but not like *architecture*. v5 fixes three weaknesses you called out:
 
-## 1. Composition — true depth in 3 planes
+1. **Architectural depth** — there's no sense of plan/section/elevation, no measured space, no layered material.
+2. **Aesthetic feel** — the photo is a flat rectangle floating beside text. No tactility, no print quality, no atmosphere transitioning the eye between planes.
+3. **Typography (7/10 → 10/10)** — Inter @ weight 200 is generic for a luxury practice. The display word "ARCHITECTURE" is wide and limp. Hierarchy lacks an anchor numeral.
 
-Establish three z-planes so the eye lands on the photo first, then the headline, then the metadata.
+Below is the redesign. Selected Works stays as-is (you like it).
 
-```text
-plane Z-2  ▸ atmosphere : large faded numeral "17" + blueprint, blurred, drifting
-plane Z-1  ▸ stage      : photo (left) + headline stack (right)
-plane Z-0  ▸ hud        : top rail · bottom rail · scroll cue · index ticker
-```
+---
 
-- Replace the boxed hairline frame + 4 corner ticks with **two thin asymmetric rules only**: a top-left bracket `┌` (24px) and a bottom-right bracket `┘` (24px). Less noise, more intent.
-- Add a **giant background numeral** "17" (Fraunces, ~58vw, ink @ 4% opacity, behind everything) bleeding off the right edge. Slow parallax on scroll. This is the editorial anchor — it's what makes monographs feel like monographs.
-- Move the blueprint *behind the photo column* at 6% opacity (not behind the type) so the right side stays clean for typography.
+## 1. Typography — change the voice, not just the size
 
-## 2. Photo — make it feel like a window, not a tile
+Current display = `Inter wght:200 -0.05em`. That's *Apple keynote*, not *architecture monograph*. Architects use cut serifs, geometric grotesques, or ultra-condensed display faces. We'll move to a true editorial pairing:
 
-- Wrap the photo in a **double frame**: outer 1px `--hairline` offset 12px, inner photo. Creates a passe-partout / mat board look.
-- Add a **soft inner shadow** via `box-shadow: inset 0 0 80px rgba(14,14,12,.25)` so the image has held-print depth.
-- Replace the 4-photo carousel with **3 photos** and slow it to **8s** intervals — current 5.8s is anxious, gallery pace is slower.
-- The transition is the single hero animation: a **horizontal split-curtain wipe** — the outgoing image splits from a center seam (top half lifts up, bottom half drops) over 1.1s with `[0.83,0,0.17,1]`, revealing the next image already in place underneath. Drop the simultaneous opacity fade — wipes don't fade.
-- Continuous Ken Burns scale 1.04 → 1.10 over 14s (slower than current 6s — current zoom is too fast and competes with the wipe).
-- Add a **vertical caption strip** along the photo's right edge (rotated 90°, label-meta, ink/40): `MERIDIAN TOWER · SGP · 2023` — gallery wall label. Replaces the bottom rail's redundant project name.
-- Keep the cursor reticle but make it a **thin ring (16px, no fill)** with a 1px clay center dot, so it reads as a focusing reticle, not a button.
+| role | current | new | why |
+|------|---------|-----|-----|
+| display headline | Inter 200 | **Fraunces Variable** (`opsz:144, wght:300, SOFT:30`) high-contrast roman caps | already loaded, gives Didone-like contrast — instantly "monograph" |
+| morph italic word | Fraunces italic | **Fraunces italic** with `opsz:144, wght:400, SOFT:100` + optical kerning | softer, more handwritten |
+| meta / labels | Inter caps tracked | **JetBrains Mono** 400, tracked `0.18em` | engineers' caption — drafting feel |
+| body micro | Inter | Inter 400 (kept) | unchanged |
 
-## 3. Typography — one focal headline, one whisper
+Add JetBrains Mono via `@fontsource-variable/jetbrains-mono` (`bun add` it during build). Update `.label-meta` to use the mono.
 
-Current headline is 4 stacked lines all at the same weight — visually monotone. Rebuild as a hierarchy:
+Headline composition becomes:
 
 ```text
-                      ┌─ small eyebrow
-ARCHITECTURE          ◂ N° XVII · MMXXVI
-of                    ◂ display, ink/40, italic Fraunces, smaller (-30%)
-TOWER.                ◂ display, ink, bold motion word (the hero word)
-                      
-                      ─── 64px clay rule
-                      Quiet volumes for loud cities.
-                      Tokyo · New York · since 2009.
+N°               XVII             ◂ mono, ink/30, drafted left
+─────────────────────────────     ◂ 1px hairline rule, draws across
+ARCHITECTURE                      ◂ Fraunces ROMAN caps, contrast
+   of                             ◂ Fraunces italic, ink/35, indented
+TOWER.                            ◂ Fraunces italic, clay (morph word)
+─── 64px clay rule
+Quiet volumes for loud cities.    ◂ italic body, single line
+TYO · NYC · since MMIX
 ```
 
-- Drop "An / architecture / of / tower." — keep **3 lines only**: `ARCHITECTURE` (sans display, all caps, ink) · `of` (Fraunces italic, ink/40, ~50% size, indented 2ch) · `tower.` (Fraunces italic, clay, full size, the morphing word).
-- The contrast between the rigid sans cap line and the soft italic morph is what creates the "designed" feel.
-- Replace the morph blur (currently `blur(14px)`) with a **mask-image vertical reveal** — sharper, more architectural. Each new word slides up from below a hairline cut.
-- Keep tagline but reduce to **one line** with a leading 64px clay rule — the current 2-line tagline + meta line + "01 — Vol. XVII" eyebrow is 3 redundant beats.
+Removing the boxed sans "ARCHITECTURE" in favor of high-contrast Fraunces roman is the single biggest aesthetic upgrade. It makes the word read as engraved/printed instead of typed.
 
-## 4. Color discipline — clay as accent, not decoration
+---
 
-Current uses clay 7+ times in the hero. Reduce to **3 deliberate uses**:
-1. The morphing italic word (the hero moment)
-2. The 64px tagline rule
-3. The pulsing "live" dot in top rail
+## 2. Architectural depth — measured, not just deep
 
-Remove clay from: corner ticks (delete ticks), vertical column rule (make it `--hairline`), photo counter dot (make it ink), bottom rail dot (make it a hairline `+`).
+We add three architecture-native motifs that flat editorial layouts don't have:
 
-## 5. Synchronised choreography — one curtain, not ten entrances
+### a) Drafted tick-mark grid (background plane Z-3)
+A faint 8-column architectural grid drawn in 1px hairlines across the entire viewport with **measurement ticks** every 80px (`A | B | C | D | E | F | G | H`). Opacity `ink/8`. Animates draw-in left→right over 1.4s on load. Becomes invisible structure that "explains" why elements align where they do — pure draftsmanship.
 
-Current entrances fire across 13 different `delay` values (0.4 → 1.7s) — feels scattered. Replace with a single **5-beat orchestrated sequence** driven by a parent `staggerChildren` variant on the `<section>`:
+### b) Section / Elevation labels
+Top-left of the photo gets a tiny label `SECT. A-A` and bottom of the right column gets `ELEV. NORTH`. These are blueprint vocabulary — they make the page feel like a sheet pulled from a project set.
+
+### c) Compass rose (lower-right of hero)
+A 56px architect's compass: a circle with N/E/S/W ticks, one slow continuous rotation (60s loop). Drawn with SVG at `ink/30`. Placed where the bottom rail meets the right margin. Quiet but unmistakable.
+
+---
+
+## 3. Photo plane — from rectangle to **window**
+
+Three changes layer real depth into the image:
+
+- **Mat board behind the frame**: a `paper` rectangle offset 24px down/right behind the photo with a `1px ink/15` border + soft drop. Makes the image feel printed and mounted, not embedded.
+- **Section line through the photo**: a 1px clay-tinted horizontal cut at 38% from the top, with two tick marks `A` and `A'` at the ends. This is the line referenced by `SECT. A-A` — a tiny inside joke, but it visually slices the image into thirds (the architectural rule of thirds done literally).
+- **Plate caption** sits *under* the photo (not vertically beside) in mono small caps:
+  ```
+  PL. 03 / MERIDIAN TOWER          SGP · 2023 · 47°F
+  ```
+  More gallery, less rotated label. The vertical `writing-mode` rotation reads as a gimmick on second visit.
+
+Image transition stays the split-curtain wipe but slows to **1.3s** with a darker mid-frame: a 60ms paper-flash between exits (the outgoing image briefly reveals paper behind before the incoming arrives — like a slide projector advancing). This adds a beat of darkness that is far more cinematic than direct cross-cut.
+
+---
+
+## 4. Color & material discipline
+
+Current paper is fine. Add:
+
+- `--ink-warm: oklch(0.22 0.02 70)` — slightly warmer ink for body, leaving the cool ink for headlines. Splits the type into two material tones (graphite vs ink) which is what monograph plates actually do.
+- `--paper-shadow: oklch(0.92 0.014 84)` — for the mat board so it reads as a different paper stock, not the same surface.
+
+Clay stays the single accent. Used in: morph word, section line `A—A'`, 64px tagline rule, the live-dot. Four uses, all justified.
+
+---
+
+## 5. Synchronized motion (refined)
+
+Sequence — each beat clearly handed off, no overlap fog:
 
 ```text
-beat   t       what                                                 ease
-─────  ──────  ──────────────────────────────────────────────────  ─────────
-0      0.0s    paper background fade-in from ink (200ms)            linear
-1      0.2s    HUD — top rail + bottom rail fade + brackets draw    quint-out
-2      0.5s    photo passe-partout opens (clip-path)                expo-in-out
-3      0.9s    headline lines reveal, line-by-line 120ms stagger    quint-out
-4      1.4s    tagline rule scales + tagline fades                  quint-out
-5      1.8s    morph word arrives + Ken Burns starts                expo-out
+beat  t      element                                   ease
+────  ─────  ───────────────────────────────────────  ────────
+0     0.00s  paper fade-in                            linear
+1     0.15s  drafting grid lines draw L→R             quint-out
+2     0.45s  ticks letter in (A B C D E F G H)        quint-out
+3     0.65s  HUD top + bottom rails                   quint-out
+4     0.85s  N° XVII numeral counts up 0→17           expo-out
+5     1.00s  rule under numeral draws L→R             expo-out
+6     1.15s  photo mat fades in                       quint-out
+7     1.30s  passe-partout opens (clip-path)          expo-in-out
+8     1.55s  SECT. A-A line draws across photo        quint-out
+9     1.65s  headline lines reveal (stagger 140ms)    quint-out
+10    2.10s  morph word arrives                       expo-out
+11    2.25s  64px clay rule + tagline                 quint-out
+12    2.40s  compass rose fades + starts rotating     linear
 ```
 
-All beats use a shared variants object so they actually feel *cued*, not just delayed. Use `motion.div variants={parent} initial="hidden" animate="visible"` and child variants — replace ad-hoc `initial`/`animate`/`delay` props throughout the file.
+Continuous loops (independent):
+- Photo Ken Burns 1.04→1.10 over 16s
+- Word morph every 3.4s
+- Live dot pulse 2.4s
+- Compass 60s rotation
+- Tokyo/NYC clocks 15s tick
 
-## 6. Scroll-out — let the hero exit with intent
+Scroll-out parallax: numeral leaves fastest (`y:-300`), photo `y:-120` + `scale:1.06`, headline `y:-40` per-line bottom-up, grid fades to 0, rails fade first.
 
-Current scroll fade is just `opacity → 0.6 → 0`. Replace with:
-- Photo: continues parallax (y: -120) and gains scale (1 → 1.06)
-- Headline: y: -40, opacity → 0 *staggered per line bottom-up*
-- Background "17" numeral: y: -300 (much faster than foreground = parallax depth)
-- Top/bottom rails fade first (faster) so by the time the marquee enters, only the headline/photo are dissolving
+---
 
-This makes the transition into the marquee feel **filmic** instead of "the page scrolled."
+## 6. Files to change
 
-## 7. Mobile
+- **`src/components/landing/Hero.tsx`** — full rewrite per spec above. Add `<DraftingGrid />`, `<CompassRose />`, `<NumeralCounter />`, `<SectionLine />` as local components within the file.
+- **`src/styles.css`** —
+  - Add `@import "@fontsource-variable/jetbrains-mono/index.css";`
+  - Add `.font-mono-meta` utility (JetBrains Mono 400, tracked)
+  - Update `.label-meta` to use mono
+  - Add `--ink-warm`, `--paper-shadow` tokens
+  - Add `.mat-board` utility (offset shadow rectangle)
+  - Add `.shadow-plate` (softer than `shadow-print`)
+- **`package.json` / install** — `bun add @fontsource-variable/jetbrains-mono`
 
-At `<md`, the split-stage collapses to a single column:
-- Background numeral becomes `28vw`, anchored bottom-right
-- Photo full-width, aspect 4/5
-- Headline below, sized at `clamp(48px, 14vw, 88px)`
-- Vertical caption strip rotates back to horizontal under the photo
-- Top rail collapses to `TYO · NYC · N° XVII`
+No other components touched. Marquee, Philosophy, FeaturedProjects, WorksIndex, ClosingFrame stay exactly as they are.
 
-## Files
+---
 
-- `src/components/landing/Hero.tsx` — full rewrite (single file; structure above)
-- `src/styles.css` — add `.shadow-print` (inset shadow), `.passe-partout` helper, optional `--ink-08` token
+## What you'll see vs. now
 
-## Tradeoffs
+| signal | now | after v5 |
+|--------|-----|----------|
+| typography voice | minimalist tech | engraved monograph |
+| background | paper + faded "17" | paper + 8-col drafted grid + "17" |
+| photo | floating rectangle | matted plate with section cut |
+| metadata font | Inter caps | mono caps (drafting style) |
+| architectural cues | none | grid ticks, SECT./ELEV. labels, compass rose, section line |
+| numeral hierarchy | static "N° XVII / 26" in corner | giant counted numeral as primary anchor with rule below |
+| photo transition | split wipe | split wipe + 60ms paper flash (slide-projector beat) |
+| accents | 4 clay touches | 4 clay touches (disciplined) |
 
-- Reducing the carousel to 3 images and slowing to 8s means less "stuff happening" — that's the point. Galleries breathe.
-- Removing the boxed frame + ticks is the biggest visible change; some users like the corner-tick look. If you want them back as a quieter detail, say "keep brackets" and I'll keep just the two diagonal corners but push them to `ink/15`.
-
-## Open question
-
-Default photo set stays as towers (3 of the current 4: Meridian, Halden, Kojima). Reply **"swap photos"** if you want a different mood (interiors / urban plans). Otherwise I proceed with the reduced tower set.
+If you want to dial back any element say the word and I'll trim it: **"no grid"** removes the drafting grid; **"no compass"** removes the rose; **"keep label vertical"** keeps the rotated photo caption.
