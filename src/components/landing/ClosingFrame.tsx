@@ -27,11 +27,15 @@ export function ClosingFrame() {
           >
             04 — Commission
           </motion.div>
-          <h2 className="font-fraunces italic text-4xl md:text-7xl lg:text-8xl leading-[1.02] max-w-4xl mx-auto tracking-[-0.02em]">
+          <motion.h2
+            animate={{ letterSpacing: ["-0.02em", "-0.005em", "-0.02em"] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="font-fraunces italic text-4xl md:text-7xl lg:text-8xl leading-[1.02] max-w-4xl mx-auto"
+          >
             <SplitText text="Build quietly." by="word" stagger={0.08} delay={1} duration={1.2} />
             <br />
             <SplitText text="Build to last." by="word" stagger={0.08} delay={1.4} duration={1.2} />
-          </h2>
+          </motion.h2>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
