@@ -1,119 +1,71 @@
 
-# AXIS NOVA — v2: from "nice" to gallery-grade
+# Hero v3 — "Cinematic Stage" + motion sweep
 
-The current page leans on flat opacity fades and a tired dark hero stack. We rebuild around a new visual thesis, install **framer-motion**, and replace passive transitions with choreography that reacts to scroll, cursor and time.
+Keep the current Hero as base, but rebuild it into an editorial split-stage with real depth, then propagate motion across the rest of the page. Slim the marquee. Trim filler.
 
-## 1. New visual thesis
+## 1. Hero — split-stage composition
 
-Drop the black hero. New palette is warm, paper-like, with ink as accent — feels like an architectural monograph, not a tech site.
-
-- **Paper** `#EFECE4` (background, dominant)
-- **Ink** `#0E0E0C` (type)
-- **Clay** `#C2724A` terracotta accent (single hot note — used on the moving index, hero ticker dot, hover states)
-- **Mist** `#D9D4C7` (cards, dividers)
-- Typography: keep Inter 200 for display, but introduce **"Fraunces"** (variable serif) for an oversized italic display word that morphs in the hero. Use `font-variation-settings` opsz/wght animation — that's the "out of the box" type move.
-
-## 2. Hero — "Living Blueprint"
-
-Replace the cross-fading photo hero with a layered, generative composition. Five layers, all animated by framer-motion + scroll:
+Replace the centered title-over-blueprint with a 12-column editorial stage that *feels* like a magazine spread caught mid-turn.
 
 ```text
-┌────────────────────────────────────────────────────┐
-│  AXIS NOVA            ───────────                  │  ← ultra-thin top rail with live time (Tokyo / NYC)
-│                                                    │
-│           A R C H I T E C T U R E                  │  ← split-letter stagger reveal (each glyph eases in
-│           [italic serif word morphs:               │     on its own delay), letters wrapped in clip-paths
-│            "tower" → "ground" → "light"            │
-│            via AnimatePresence type swap]          │
-│                                                    │
-│   ┌─ blueprint SVG, slow draw-on with pathLength ─┐│
-│   │  thin ink lines forming a tower elevation,    ││
-│   │  axis ticks, dimension arrows; parallax on    ││
-│   │  mouse move (springy, useMotionValue)         ││
-│   └────────────────────────────────────────────────┘│
-│                                                    │
-│  35.6762° N · 139.6503° E   ●   14:02 JST          │
-│  scroll ↓                              EST. 2009   │
-└────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ TYO 14:02 · NYC 01:02      ●  14 LIVE                  N° XVII / 26 │
+│                                                                      │
+│   ┌──────────┐                                                       │
+│   │          │   An                       [vertical clay rule        │
+│   │  TALL    │   architecture             grows top→bottom on load]  │
+│   │  PHOTO   │   of                                                  │
+│   │  (live   │   ▸ tower.  ← morphs (Fraunces italic, clay)          │
+│   │  parallax│                                                       │
+│   │  + slow  │   ────────                                            │
+│   │  zoom)   │   Quiet volumes for loud cities.                      │
+│   │          │   Tokyo · New York · since 2009.                      │
+│   └──────────┘                                                       │
+│                                                                      │
+│   01 / 04   meridian tower — singapore                    scroll ↓   │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-Motion details (framer-motion):
-- `useScroll` + `useTransform` to slide the entire hero up 15% and fade as user enters Philosophy → reads as a pinned dolly.
-- Hand-drawn SVG **blueprint of a tower elevation** with `motion.path` `pathLength` 0→1 over 2.5s, staggered per layer (frame, axis grid, dimension lines, label callouts).
-- Cursor parallax on the blueprint via `useMotionValue` + `useSpring` (stiffness 80, damping 20) — moves only ±12px so it feels weighty, not gimmicky.
-- Display headline split per character with `motion.span` and stagger 0.04s, `clipPath` reveal from below.
-- One **rotating italic serif word** ("tower" / "ground" / "light" / "silence") in the headline, swapped every 3.2s via `AnimatePresence mode="wait"` with `y` + `filter: blur` cross.
-- Live local clocks (Tokyo + NYC) ticking — small, ambient, real.
-- A single **clay dot** that subtly breathes (scale 1↔1.15, 4s loop) — the only color on the page until the index.
+Key elements:
 
-No background photograph. The blueprint IS the hero. Photographs appear later as reward.
+- **Left column (5/12)**: a tall portrait photograph in a thin clip-path frame. On mount the frame opens from `inset(50% 8% 50% 8%)` → `inset(0)` over 1.4s with `[0.83,0,0.17,1]`. Inside, the image does a continuous slow zoom (scale 1.05 → 1.12, 14s loop). Cursor parallax shifts it ±10px. The photo cycles every 6s through 4 tower photos via `AnimatePresence` with a horizontal slit cross (clip-path swap), each with a faint `01/04` counter top-left of the frame.
+- **Right column (7/12)**: typographic stack. "An / architecture / of / **tower.**" stacked on its own line each — per-line `clipPath: inset(0 0 100% 0)` reveal with 120ms stagger. The morphing italic word stays (Fraunces, clay). Replace bland body sentence with a two-line tagline only.
+- **Vertical clay hairline** between the two columns scales from `scaleY:0` to `1` (origin top) over 1.6s on mount — anchors the composition.
+- **Blueprint** is moved to a *background watermark* behind the right column at 8% opacity, large, drifting slowly upward on scroll (parallax). It stops being the star, becomes texture.
+- **Top rail**: TYO/NYC clocks + "14 LIVE" + edition number. Compact, single line.
+- **Bottom rail**: current photo index `01/04` + project name (animates via `AnimatePresence` on photo swap) + scroll cue. Removes "Est. 2009 — Vol. XVII" duplication.
+- Cursor follows a small **ink dot reticle** (10px) on the photo column only — pure CSS-free spring via `useSpring`. Subtle, tactile.
+- Initial choreography (1.8s total): top rail fade → vertical rule grows → photo frame opens → blueprint draws (faster, 1.4s) → headline lines reveal → bottom rail fades.
 
-## 3. Marquee bridge (new)
+## 2. Trim content
 
-Between hero and Philosophy, a single slim row scrolls horizontally with `motion.div` driven by `useScroll` (not a CSS keyframe — speed reacts to actual scroll velocity using `useVelocity` + `useSpring`):
+- Drop the long body paragraph in the hero (only the 2-line tagline remains).
+- Drop the "Est. 2009 — Vol. XVII" bottom-right block (already in top rail).
+- Marquee: shrink to a thin strip — `py-2`, font `text-xs label-meta` tracking-wide, a single line of small caps with hairline top + bottom and clay dots between items. No more 5xl serif. Velocity reaction stays.
 
-```
-TOKYO ●  NEW YORK ●  EST. 2009 ●  42 ARCHITECTS ●  14 LIVE COMMISSIONS ●  ...
-```
+## 3. Motion sweep across the rest of the page
 
-Direction flips on scroll-up. Tiny detail, big "this thing is alive" signal.
+Existing sections work but feel static between transitions. Add:
 
-## 4. Philosophy — kinetic type
+- **Philosophy**: each cap-card lifts on hover (`y:-4`, clay underline draw). The `— H. Arai` signature does a handwritten draw effect using `motion.svg path` instead of plain text (use a stroke-drawn signature SVG inline).
+- **FeaturedProjects**: when the active project changes, the right-side text panel slides in horizontally (`x: 60 → 0`, opacity, 0.7s) instead of plain opacity. Add a subtle continuous Ken Burns (scale 1→1.08 over 8s) on the active image. Add a `motion.div` page-edge "frame ticks" at each corner that rotate-in on enter.
+- **WorksIndex**: when a row is hovered, the *other* rows fade to `opacity:0.35` and shift `x: 8` — focus mode. Row letters do a subtle `y` wave on hover.
+- **ClosingFrame**: keep the wipe; add a slow continuous `letter-spacing` breath on the headline (0.02em ↔ 0.04em, 6s).
+- **Global**: add a `<PageProgress>` 1px clay bar at the very top driven by `useScroll().scrollYProgress`. Add a custom **cursor** (12px ink ring with clay dot) that scales 2x on hovering interactive elements.
 
-- The long sentence is split into **words**, each `motion.span` revealed on enter with `y: 24 → 0`, `opacity 0 → 1`, stagger 0.05.
-- Background gets a barely-visible animated grain layer (`mix-blend-multiply`, opacity 0.05).
-- A vertical 1px clay rule on the left grows from 0% to 100% height as the section enters view (`useInView` + transform).
+## 4. Files
 
-## 5. Featured Projects — true cinematic pin
-
-Rebuild with framer-motion's `useScroll({ target, offset })`:
-- Sticky 100vh canvas, three projects.
-- Image: not just opacity — each image sits in a **clip-path frame that expands from a thin horizontal slit** (`inset(50% 0 50% 0)` → `inset(0 0 0 0)`) as it becomes active. Outgoing image collapses to a slit.
-- Project number ("014") is huge, **outline-only**, sits behind the photo and counter-parallaxes upward as you scroll the section.
-- Right-side text panel: each line word-staggers in. Project metadata animates with a horizontal rule that draws under it.
-- Replace the right-edge progress bar with a **circular dial top-right** showing 01/03 with an SVG arc using `pathLength` bound to scroll progress.
-- Photos shift to **duotone (paper × ink)** instead of pure grayscale — feels intentional with the new palette.
-
-## 6. Works Index — magnetic + image flip
-
-- Hovered row: name letters lift on a 0.03s stagger (`y: 0 → -4 → 0`), clay underline draws left-to-right.
-- Cursor preview becomes a **9:11 portrait card** that:
-  - follows cursor with `useSpring` lag (snappier than the current CSS `left/top`),
-  - rotates ±4° based on cursor velocity (`useVelocity`) — a real "weight" effect,
-  - cross-fades content via `AnimatePresence` so swapping rows feels like flipping a slide.
-- A sticky meta column on the left shows the **currently hovered city + year** in large type, animating with `AnimatePresence`.
-
-## 7. Closing frame — controlled drama
-
-- Background switches to ink, transition handled by an **SVG mask wipe** (a giant circle expanding from the CTA position) when the section enters view — gives a real "curtain" moment instead of a hard color flip.
-- "Build quietly. Build to last." set in Fraunces italic, words revealed one-by-one.
-- CTA button: magnetic hover (button translates ~6px toward cursor via `useSpring`), arrow extends on hover.
-
-## 8. Global motion system
-
-- Install **framer-motion**. Keep lenis for smooth scroll.
-- Add `src/components/motion/` primitives reused across sections:
-  - `<Reveal>` — wraps children, fade-up on enter (`useInView` once).
-  - `<SplitText>` — splits a string into per-char or per-word motion spans with stagger.
-  - `<MagneticButton>` — spring-follows cursor.
-  - `<MarqueeScroll>` — velocity-driven horizontal marquee.
-- Respect `prefers-reduced-motion`: a single hook disables stagger / parallax / blur.
-- Top bar: when over ink sections it switches color via `useScroll` + a section-bounds map (cleaner than `mix-blend-difference`, which currently looks muddy).
-
-## 9. Files touched
-
-- `package.json` — add `framer-motion`, `@fontsource-variable/fraunces`.
-- `src/styles.css` — new tokens (paper, ink, clay, mist), grain utility, duotone helper, Fraunces import.
-- `src/components/motion/{Reveal,SplitText,MagneticButton,MarqueeScroll}.tsx` — new.
-- `src/components/landing/Hero.tsx` — full rewrite (blueprint SVG + motion).
-- `src/components/landing/Marquee.tsx` — new bridge section.
-- `src/components/landing/Philosophy.tsx` — kinetic type pass.
-- `src/components/landing/FeaturedProjects.tsx` — clip-path image transitions, outline numerals, dial.
-- `src/components/landing/WorksIndex.tsx` — spring cursor card, sticky meta column.
-- `src/components/landing/ClosingFrame.tsx` — SVG wipe + magnetic CTA.
-- `src/components/landing/TopBar.tsx` — section-aware color logic.
-- `src/routes/index.tsx` — insert `<Marquee/>` between Hero and Philosophy.
+- `src/components/landing/Hero.tsx` — full rewrite to split-stage.
+- `src/components/landing/Marquee.tsx` — shrink to thin strip, small caps.
+- `src/components/landing/FeaturedProjects.tsx` — slide-in text panel, Ken Burns, corner ticks.
+- `src/components/landing/WorksIndex.tsx` — focus-on-hover dimming.
+- `src/components/landing/Philosophy.tsx` — signature SVG draw, hover lift.
+- `src/components/landing/ClosingFrame.tsx` — letter-spacing breath.
+- `src/components/landing/PageProgress.tsx` — new, 1px scroll bar.
+- `src/components/landing/Cursor.tsx` — new, custom spring cursor (desktop only).
+- `src/routes/index.tsx` — mount `<PageProgress/>` and `<Cursor/>`.
+- Hero photos: 4 Unsplash tower URLs (no new asset files).
 
 ## Open question
 
-Should the hero **blueprint** depict (a) a tower elevation, (b) a city plan/aerial axonometric, or (c) a quiet section drawing of a single room? I'll pick (a) tower elevation by default since the studio is "commercial & urban" — say the word if you'd rather (b) or (c).
+Default photo cycle is **4 tall tower photographs** (architectural, neutral, B&W-leaning). Reply with "city plan" or "interiors" to swap that mood; otherwise I proceed with towers.
