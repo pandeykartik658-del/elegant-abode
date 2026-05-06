@@ -63,8 +63,14 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  /* Bone white & deep ink — stark monochrome */
+  --background: oklch(0.972 0.005 85);
+  --foreground: oklch(0.14 0 0);
+  --ink: oklch(0.14 0 0);
+  --bone: oklch(0.972 0.005 85);
+  --hairline: oklch(0.14 0 0 / 0.12);
+  --hairline-strong: oklch(0.14 0 0 / 0.28);
+  --accent-warm: oklch(0.74 0.04 75);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
