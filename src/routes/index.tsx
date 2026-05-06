@@ -5,6 +5,7 @@ import { Philosophy } from "@/components/landing/Philosophy";
 import { FeaturedProjects } from "@/components/landing/FeaturedProjects";
 import { WorksIndex } from "@/components/landing/WorksIndex";
 import { ClosingFrame } from "@/components/landing/ClosingFrame";
+import { Marquee } from "@/components/landing/Marquee";
 import { useLenis } from "@/hooks/use-lenis";
 
 export const Route = createFileRoute("/")({
@@ -30,9 +31,10 @@ export const Route = createFileRoute("/")({
 function Index() {
   useLenis();
   return (
-    <main className="bg-bone text-ink min-h-screen">
+    <main className="bg-paper text-ink min-h-screen">
       <TopBar />
       <Hero />
+      <Marquee />
       <Philosophy />
       <FeaturedProjects />
       <WorksIndex />
