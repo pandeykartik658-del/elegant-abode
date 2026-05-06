@@ -190,17 +190,14 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* DIVIDER RULE */}
-          <motion.div
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            transition={{ duration: 1.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden md:block w-px bg-clay/60 origin-top self-stretch"
-            style={{ gridColumn: "span 0 / span 0" }}
-          />
-
-          {/* RIGHT — type */}
-          <div className="col-span-12 md:col-span-7 flex flex-col justify-between">
+          {/* RIGHT — type with leading clay rule */}
+          <div className="relative col-span-12 md:col-span-7 flex flex-col justify-between md:pl-10">
+            <motion.div
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: 1 }}
+              transition={{ duration: 1.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="hidden md:block absolute left-0 top-0 bottom-0 w-px bg-clay/60 origin-top"
+            />
             <div>
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
