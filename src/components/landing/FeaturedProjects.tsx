@@ -60,6 +60,22 @@ export function FeaturedProjects() {
       style={{ height: `${PROJECTS.length * 120}vh` }}
     >
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+        {/* corner ticks */}
+        {[
+          "top-6 left-6 border-t border-l",
+          "top-6 right-6 border-t border-r",
+          "bottom-6 left-6 border-b border-l",
+          "bottom-6 right-6 border-b border-r",
+        ].map((cls, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0, rotate: -45 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 + i * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className={`pointer-events-none absolute w-5 h-5 border-clay z-20 ${cls}`}
+          />
+        ))}
         {/* gigantic outline numeral, parallaxes */}
         <motion.div
           style={{ y: numberY }}
@@ -99,10 +115,12 @@ export function FeaturedProjects() {
               }}
               transition={{ duration: 1.1, ease: [0.83, 0, 0.17, 1] }}
             >
-              <img
+              <motion.img
                 src={proj.img}
                 alt={proj.name}
                 className="h-full w-full object-cover"
+                animate={i === active ? { scale: [1, 1.1] } : { scale: 1 }}
+                transition={i === active ? { duration: 9, ease: "linear" } : { duration: 0.6 }}
                 style={{ filter: "grayscale(100%) contrast(1.1) brightness(0.7) sepia(0.15)" }}
               />
               <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/30 to-ink/60" />
@@ -140,10 +158,10 @@ export function FeaturedProjects() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={p.no}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
+                  initial={{ opacity: 0, x: 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 >
                   <div className="label-meta text-clay mb-6">Project № {p.no}</div>
                   <h3 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.92] mb-8 tracking-[-0.04em]">

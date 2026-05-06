@@ -59,9 +59,18 @@ export function Philosophy() {
                   initial={{ opacity: 0, y: 18 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.9, delay: 1.2 + i * 0.15 }}
+                  whileHover={{ y: -4 }}
+                  className="group relative pb-3"
                 >
                   <div className="label-meta text-ink/50 mb-3">{c.l}</div>
                   <p className="text-sm font-light leading-relaxed text-ink/80">{c.t}</p>
+                  <motion.span
+                    className="absolute left-0 bottom-0 h-px bg-clay origin-left"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ width: "100%" }}
+                  />
                 </motion.div>
               ))}
             </div>

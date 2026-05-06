@@ -58,17 +58,20 @@ export function WorksIndex() {
           </div>
         </Reveal>
 
-        <ul>
+        <ul onMouseLeave={() => setHover(null)}>
           {WORKS.map((w, i) => (
             <motion.li
               key={w.no}
               onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover((h) => (h === i ? null : h))}
               className="group relative grid grid-cols-12 gap-4 items-center py-7 hairline-b cursor-pointer"
               initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0, transition: { duration: 0.7, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] } }}
               viewport={{ once: true, margin: "-5% 0px" }}
-              transition={{ duration: 0.7, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+              animate={{
+                opacity: hover === null ? 1 : hover === i ? 1 : 0.28,
+                x: hover === null ? 0 : hover === i ? 0 : 12,
+              }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               <motion.div
                 className="absolute inset-0 -mx-6 md:-mx-12 bg-mist/60 origin-left"

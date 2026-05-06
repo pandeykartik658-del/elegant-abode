@@ -6,6 +6,8 @@ import { FeaturedProjects } from "@/components/landing/FeaturedProjects";
 import { WorksIndex } from "@/components/landing/WorksIndex";
 import { ClosingFrame } from "@/components/landing/ClosingFrame";
 import { Marquee } from "@/components/landing/Marquee";
+import { PageProgress } from "@/components/landing/PageProgress";
+import { Cursor } from "@/components/landing/Cursor";
 import { useLenis } from "@/hooks/use-lenis";
 
 export const Route = createFileRoute("/")({
@@ -32,6 +34,8 @@ function Index() {
   useLenis();
   return (
     <main className="bg-paper text-ink min-h-screen">
+      <PageProgress />
+      <Cursor />
       <TopBar />
       <Hero />
       <Marquee />
