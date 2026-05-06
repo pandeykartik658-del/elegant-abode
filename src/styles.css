@@ -233,4 +233,23 @@
   html.cursor-custom, html.cursor-custom * { cursor: none !important; }
 }
 
+@layer utilities {
+  .shadow-print {
+    box-shadow: inset 0 0 80px rgba(14, 14, 12, 0.28), 0 30px 60px -30px rgba(14, 14, 12, 0.35);
+  }
+  .passe-partout {
+    position: relative;
+  }
+  .passe-partout::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    border: 1px solid var(--hairline);
+    pointer-events: none;
+  }
+  .text-ink-08 { color: oklch(0.16 0.005 60 / 0.08); }
+  .text-ink-04 { color: oklch(0.16 0.005 60 / 0.04); }
+  .vertical-rl { writing-mode: vertical-rl; }
+}
+
 

@@ -1,71 +1,107 @@
 
-# Hero v3 — "Cinematic Stage" + motion sweep
+# Hero v4 — "Editorial Depth"
 
-Keep the current Hero as base, but rebuild it into an editorial split-stage with real depth, then propagate motion across the rest of the page. Slim the marquee. Trim filler.
+The current hero has the right ingredients but reads flat: too many competing accents (clay rule + clay dot + clay word + clay corner ticks + clay counter), the photo and type live on the same plane with no atmospheric depth, and the entrance animations all fire on similar timings so nothing feels *led*. v4 rebuilds it as a single, breathing composition.
 
-## 1. Hero — split-stage composition
+## 1. Composition — true depth in 3 planes
 
-Replace the centered title-over-blueprint with a 12-column editorial stage that *feels* like a magazine spread caught mid-turn.
+Establish three z-planes so the eye lands on the photo first, then the headline, then the metadata.
 
 ```text
-┌──────────────────────────────────────────────────────────────────────┐
-│ TYO 14:02 · NYC 01:02      ●  14 LIVE                  N° XVII / 26 │
-│                                                                      │
-│   ┌──────────┐                                                       │
-│   │          │   An                       [vertical clay rule        │
-│   │  TALL    │   architecture             grows top→bottom on load]  │
-│   │  PHOTO   │   of                                                  │
-│   │  (live   │   ▸ tower.  ← morphs (Fraunces italic, clay)          │
-│   │  parallax│                                                       │
-│   │  + slow  │   ────────                                            │
-│   │  zoom)   │   Quiet volumes for loud cities.                      │
-│   │          │   Tokyo · New York · since 2009.                      │
-│   └──────────┘                                                       │
-│                                                                      │
-│   01 / 04   meridian tower — singapore                    scroll ↓   │
-└──────────────────────────────────────────────────────────────────────┘
+plane Z-2  ▸ atmosphere : large faded numeral "17" + blueprint, blurred, drifting
+plane Z-1  ▸ stage      : photo (left) + headline stack (right)
+plane Z-0  ▸ hud        : top rail · bottom rail · scroll cue · index ticker
 ```
 
-Key elements:
+- Replace the boxed hairline frame + 4 corner ticks with **two thin asymmetric rules only**: a top-left bracket `┌` (24px) and a bottom-right bracket `┘` (24px). Less noise, more intent.
+- Add a **giant background numeral** "17" (Fraunces, ~58vw, ink @ 4% opacity, behind everything) bleeding off the right edge. Slow parallax on scroll. This is the editorial anchor — it's what makes monographs feel like monographs.
+- Move the blueprint *behind the photo column* at 6% opacity (not behind the type) so the right side stays clean for typography.
 
-- **Left column (5/12)**: a tall portrait photograph in a thin clip-path frame. On mount the frame opens from `inset(50% 8% 50% 8%)` → `inset(0)` over 1.4s with `[0.83,0,0.17,1]`. Inside, the image does a continuous slow zoom (scale 1.05 → 1.12, 14s loop). Cursor parallax shifts it ±10px. The photo cycles every 6s through 4 tower photos via `AnimatePresence` with a horizontal slit cross (clip-path swap), each with a faint `01/04` counter top-left of the frame.
-- **Right column (7/12)**: typographic stack. "An / architecture / of / **tower.**" stacked on its own line each — per-line `clipPath: inset(0 0 100% 0)` reveal with 120ms stagger. The morphing italic word stays (Fraunces, clay). Replace bland body sentence with a two-line tagline only.
-- **Vertical clay hairline** between the two columns scales from `scaleY:0` to `1` (origin top) over 1.6s on mount — anchors the composition.
-- **Blueprint** is moved to a *background watermark* behind the right column at 8% opacity, large, drifting slowly upward on scroll (parallax). It stops being the star, becomes texture.
-- **Top rail**: TYO/NYC clocks + "14 LIVE" + edition number. Compact, single line.
-- **Bottom rail**: current photo index `01/04` + project name (animates via `AnimatePresence` on photo swap) + scroll cue. Removes "Est. 2009 — Vol. XVII" duplication.
-- Cursor follows a small **ink dot reticle** (10px) on the photo column only — pure CSS-free spring via `useSpring`. Subtle, tactile.
-- Initial choreography (1.8s total): top rail fade → vertical rule grows → photo frame opens → blueprint draws (faster, 1.4s) → headline lines reveal → bottom rail fades.
+## 2. Photo — make it feel like a window, not a tile
 
-## 2. Trim content
+- Wrap the photo in a **double frame**: outer 1px `--hairline` offset 12px, inner photo. Creates a passe-partout / mat board look.
+- Add a **soft inner shadow** via `box-shadow: inset 0 0 80px rgba(14,14,12,.25)` so the image has held-print depth.
+- Replace the 4-photo carousel with **3 photos** and slow it to **8s** intervals — current 5.8s is anxious, gallery pace is slower.
+- The transition is the single hero animation: a **horizontal split-curtain wipe** — the outgoing image splits from a center seam (top half lifts up, bottom half drops) over 1.1s with `[0.83,0,0.17,1]`, revealing the next image already in place underneath. Drop the simultaneous opacity fade — wipes don't fade.
+- Continuous Ken Burns scale 1.04 → 1.10 over 14s (slower than current 6s — current zoom is too fast and competes with the wipe).
+- Add a **vertical caption strip** along the photo's right edge (rotated 90°, label-meta, ink/40): `MERIDIAN TOWER · SGP · 2023` — gallery wall label. Replaces the bottom rail's redundant project name.
+- Keep the cursor reticle but make it a **thin ring (16px, no fill)** with a 1px clay center dot, so it reads as a focusing reticle, not a button.
 
-- Drop the long body paragraph in the hero (only the 2-line tagline remains).
-- Drop the "Est. 2009 — Vol. XVII" bottom-right block (already in top rail).
-- Marquee: shrink to a thin strip — `py-2`, font `text-xs label-meta` tracking-wide, a single line of small caps with hairline top + bottom and clay dots between items. No more 5xl serif. Velocity reaction stays.
+## 3. Typography — one focal headline, one whisper
 
-## 3. Motion sweep across the rest of the page
+Current headline is 4 stacked lines all at the same weight — visually monotone. Rebuild as a hierarchy:
 
-Existing sections work but feel static between transitions. Add:
+```text
+                      ┌─ small eyebrow
+ARCHITECTURE          ◂ N° XVII · MMXXVI
+of                    ◂ display, ink/40, italic Fraunces, smaller (-30%)
+TOWER.                ◂ display, ink, bold motion word (the hero word)
+                      
+                      ─── 64px clay rule
+                      Quiet volumes for loud cities.
+                      Tokyo · New York · since 2009.
+```
 
-- **Philosophy**: each cap-card lifts on hover (`y:-4`, clay underline draw). The `— H. Arai` signature does a handwritten draw effect using `motion.svg path` instead of plain text (use a stroke-drawn signature SVG inline).
-- **FeaturedProjects**: when the active project changes, the right-side text panel slides in horizontally (`x: 60 → 0`, opacity, 0.7s) instead of plain opacity. Add a subtle continuous Ken Burns (scale 1→1.08 over 8s) on the active image. Add a `motion.div` page-edge "frame ticks" at each corner that rotate-in on enter.
-- **WorksIndex**: when a row is hovered, the *other* rows fade to `opacity:0.35` and shift `x: 8` — focus mode. Row letters do a subtle `y` wave on hover.
-- **ClosingFrame**: keep the wipe; add a slow continuous `letter-spacing` breath on the headline (0.02em ↔ 0.04em, 6s).
-- **Global**: add a `<PageProgress>` 1px clay bar at the very top driven by `useScroll().scrollYProgress`. Add a custom **cursor** (12px ink ring with clay dot) that scales 2x on hovering interactive elements.
+- Drop "An / architecture / of / tower." — keep **3 lines only**: `ARCHITECTURE` (sans display, all caps, ink) · `of` (Fraunces italic, ink/40, ~50% size, indented 2ch) · `tower.` (Fraunces italic, clay, full size, the morphing word).
+- The contrast between the rigid sans cap line and the soft italic morph is what creates the "designed" feel.
+- Replace the morph blur (currently `blur(14px)`) with a **mask-image vertical reveal** — sharper, more architectural. Each new word slides up from below a hairline cut.
+- Keep tagline but reduce to **one line** with a leading 64px clay rule — the current 2-line tagline + meta line + "01 — Vol. XVII" eyebrow is 3 redundant beats.
 
-## 4. Files
+## 4. Color discipline — clay as accent, not decoration
 
-- `src/components/landing/Hero.tsx` — full rewrite to split-stage.
-- `src/components/landing/Marquee.tsx` — shrink to thin strip, small caps.
-- `src/components/landing/FeaturedProjects.tsx` — slide-in text panel, Ken Burns, corner ticks.
-- `src/components/landing/WorksIndex.tsx` — focus-on-hover dimming.
-- `src/components/landing/Philosophy.tsx` — signature SVG draw, hover lift.
-- `src/components/landing/ClosingFrame.tsx` — letter-spacing breath.
-- `src/components/landing/PageProgress.tsx` — new, 1px scroll bar.
-- `src/components/landing/Cursor.tsx` — new, custom spring cursor (desktop only).
-- `src/routes/index.tsx` — mount `<PageProgress/>` and `<Cursor/>`.
-- Hero photos: 4 Unsplash tower URLs (no new asset files).
+Current uses clay 7+ times in the hero. Reduce to **3 deliberate uses**:
+1. The morphing italic word (the hero moment)
+2. The 64px tagline rule
+3. The pulsing "live" dot in top rail
+
+Remove clay from: corner ticks (delete ticks), vertical column rule (make it `--hairline`), photo counter dot (make it ink), bottom rail dot (make it a hairline `+`).
+
+## 5. Synchronised choreography — one curtain, not ten entrances
+
+Current entrances fire across 13 different `delay` values (0.4 → 1.7s) — feels scattered. Replace with a single **5-beat orchestrated sequence** driven by a parent `staggerChildren` variant on the `<section>`:
+
+```text
+beat   t       what                                                 ease
+─────  ──────  ──────────────────────────────────────────────────  ─────────
+0      0.0s    paper background fade-in from ink (200ms)            linear
+1      0.2s    HUD — top rail + bottom rail fade + brackets draw    quint-out
+2      0.5s    photo passe-partout opens (clip-path)                expo-in-out
+3      0.9s    headline lines reveal, line-by-line 120ms stagger    quint-out
+4      1.4s    tagline rule scales + tagline fades                  quint-out
+5      1.8s    morph word arrives + Ken Burns starts                expo-out
+```
+
+All beats use a shared variants object so they actually feel *cued*, not just delayed. Use `motion.div variants={parent} initial="hidden" animate="visible"` and child variants — replace ad-hoc `initial`/`animate`/`delay` props throughout the file.
+
+## 6. Scroll-out — let the hero exit with intent
+
+Current scroll fade is just `opacity → 0.6 → 0`. Replace with:
+- Photo: continues parallax (y: -120) and gains scale (1 → 1.06)
+- Headline: y: -40, opacity → 0 *staggered per line bottom-up*
+- Background "17" numeral: y: -300 (much faster than foreground = parallax depth)
+- Top/bottom rails fade first (faster) so by the time the marquee enters, only the headline/photo are dissolving
+
+This makes the transition into the marquee feel **filmic** instead of "the page scrolled."
+
+## 7. Mobile
+
+At `<md`, the split-stage collapses to a single column:
+- Background numeral becomes `28vw`, anchored bottom-right
+- Photo full-width, aspect 4/5
+- Headline below, sized at `clamp(48px, 14vw, 88px)`
+- Vertical caption strip rotates back to horizontal under the photo
+- Top rail collapses to `TYO · NYC · N° XVII`
+
+## Files
+
+- `src/components/landing/Hero.tsx` — full rewrite (single file; structure above)
+- `src/styles.css` — add `.shadow-print` (inset shadow), `.passe-partout` helper, optional `--ink-08` token
+
+## Tradeoffs
+
+- Reducing the carousel to 3 images and slowing to 8s means less "stuff happening" — that's the point. Galleries breathe.
+- Removing the boxed frame + ticks is the biggest visible change; some users like the corner-tick look. If you want them back as a quieter detail, say "keep brackets" and I'll keep just the two diagonal corners but push them to `ink/15`.
 
 ## Open question
 
-Default photo cycle is **4 tall tower photographs** (architectural, neutral, B&W-leaning). Reply with "city plan" or "interiors" to swap that mood; otherwise I proceed with towers.
+Default photo set stays as towers (3 of the current 4: Meridian, Halden, Kojima). Reply **"swap photos"** if you want a different mood (interiors / urban plans). Otherwise I proceed with the reduced tower set.
