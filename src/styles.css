@@ -77,6 +77,11 @@
   --clay: oklch(0.66 0.13 42);
   --ink-warm: oklch(0.22 0.02 70);
   --paper-shadow: oklch(0.92 0.014 84);
+  --ink-deep: oklch(0.18 0.018 60);
+  --ink-night: oklch(0.12 0.012 50);
+  --clay-glow: oklch(0.74 0.17 45);
+  --brass: oklch(0.78 0.12 80);
+  --paper-warm: oklch(0.96 0.018 80);
   --hairline: oklch(0.16 0.005 60 / 0.14);
   --hairline-strong: oklch(0.16 0.005 60 / 0.32);
   --accent-warm: oklch(0.66 0.13 42);
@@ -275,6 +280,60 @@
   .text-ink-08 { color: oklch(0.16 0.005 60 / 0.08); }
   .text-ink-04 { color: oklch(0.16 0.005 60 / 0.04); }
   .vertical-rl { writing-mode: vertical-rl; }
+
+  .bg-ink-deep { background-color: var(--ink-deep); }
+  .bg-ink-night { background-color: var(--ink-night); }
+  .text-paper-warm { color: var(--paper-warm); }
+  .text-clay-glow { color: var(--clay-glow); }
+  .bg-clay-glow { background-color: var(--clay-glow); }
+  .text-brass { color: var(--brass); }
+  .bg-brass { background-color: var(--brass); }
+  .border-brass { border-color: var(--brass); }
+  .duotone-warm {
+    filter: grayscale(55%) sepia(0.18) contrast(1.08) brightness(0.78) saturate(0.9);
+  }
+  .vignette-dusk::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(120% 90% at 25% 90%, transparent 0%, rgba(10,8,6,0.35) 55%, rgba(10,8,6,0.7) 100%);
+    pointer-events: none;
+  }
+  .text-shadow-deep {
+    text-shadow: 0 6px 30px rgba(0,0,0,0.45);
+  }
+}
+
+@keyframes shaft-drift {
+  0%   { transform: translate3d(-30%, -10%, 0) rotate(18deg); opacity: 0; }
+  20%  { opacity: 0.55; }
+  80%  { opacity: 0.55; }
+  100% { transform: translate3d(120%, 10%, 0) rotate(18deg); opacity: 0; }
+}
+.shaft-light {
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 28%;
+  height: 140%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 220, 170, 0.10) 35%, rgba(255, 235, 200, 0.18) 50%, rgba(255, 220, 170, 0.10) 65%, transparent 100%);
+  filter: blur(28px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: shaft-drift 14s linear infinite;
+}
+
+@keyframes dust-float {
+  0%   { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-20px, -30px, 0); }
+}
+.dust-layer {
+  position: absolute; inset: -20px;
+  background-image: radial-gradient(rgba(255,235,200,0.35) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.18;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: dust-float 22s linear infinite alternate;
 }
 
 
