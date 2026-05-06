@@ -13,6 +13,7 @@ export function Cursor() {
     if (typeof window === "undefined") return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
     setEnabled(true);
+    document.documentElement.classList.add("cursor-custom");
     const move = (e: MouseEvent) => { x.set(e.clientX); y.set(e.clientY); };
     const over = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
@@ -23,6 +24,7 @@ export function Cursor() {
     return () => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseover", over);
+      document.documentElement.classList.remove("cursor-custom");
     };
   }, [x, y]);
 
