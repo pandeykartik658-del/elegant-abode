@@ -66,14 +66,17 @@
 
 :root {
   --radius: 0.625rem;
-  /* Bone white & deep ink — stark monochrome */
-  --background: oklch(0.972 0.005 85);
-  --foreground: oklch(0.14 0 0);
-  --ink: oklch(0.14 0 0);
-  --bone: oklch(0.972 0.005 85);
-  --hairline: oklch(0.14 0 0 / 0.12);
-  --hairline-strong: oklch(0.14 0 0 / 0.28);
-  --accent-warm: oklch(0.74 0.04 75);
+  /* Paper / Ink / Clay — warm monograph palette */
+  --background: oklch(0.945 0.012 84);
+  --foreground: oklch(0.16 0.005 60);
+  --ink: oklch(0.16 0.005 60);
+  --paper: oklch(0.945 0.012 84);
+  --bone: oklch(0.945 0.012 84);
+  --mist: oklch(0.88 0.013 80);
+  --clay: oklch(0.66 0.13 42);
+  --hairline: oklch(0.16 0.005 60 / 0.14);
+  --hairline-strong: oklch(0.16 0.005 60 / 0.32);
+  --accent-warm: oklch(0.66 0.13 42);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
