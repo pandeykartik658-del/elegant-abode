@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { SplitText } from "@/components/motion/SplitText";
 
 const PROJECTS = [
   {
@@ -36,90 +38,155 @@ const PROJECTS = [
 export function FeaturedProjects() {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const dialLength = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const numberY = useTransform(scrollYProgress, [0, 1], [80, -80]);
 
   useEffect(() => {
-    const onScroll = () => {
-      const el = ref.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const total = el.offsetHeight - window.innerHeight;
-      const passed = Math.min(Math.max(-rect.top, 0), total);
-      const p = total > 0 ? passed / total : 0;
-      setProgress(p);
-      const i = Math.min(PROJECTS.length - 1, Math.floor(p * PROJECTS.length));
+    const unsub = scrollYProgress.on("change", (v) => {
+      const i = Math.min(PROJECTS.length - 1, Math.floor(v * PROJECTS.length * 0.999));
       setActive(i);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    });
+    return () => unsub();
+  }, [scrollYProgress]);
+
+  const p = PROJECTS[active];
 
   return (
-    <section id="works" ref={ref} className="relative bg-ink text-bone" style={{ height: `${PROJECTS.length * 110}vh` }}>
+    <section
+      id="works"
+      ref={ref}
+      className="relative bg-ink text-paper"
+      style={{ height: `${PROJECTS.length * 120}vh` }}
+    >
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-        {/* image stack */}
-        <div className="absolute inset-0">
-          {PROJECTS.map((p, i) => (
-            <div
+        {/* gigantic outline numeral, parallaxes */}
+        <motion.div
+          style={{ y: numberY }}
+          className="absolute inset-x-0 top-[8%] flex justify-center pointer-events-none"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
               key={p.no}
-              className="absolute inset-0 transition-opacity duration-1000 ease-out"
-              style={{ opacity: i === active ? 1 : 0 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 0.08, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.8 }}
+              className="font-display leading-none"
+              style={{
+                fontSize: "min(56vw, 720px)",
+                WebkitTextStroke: "1px var(--paper)",
+                color: "transparent",
+                letterSpacing: "-0.05em",
+              }}
+            >
+              {p.no}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+
+        {/* image stack with clip reveal */}
+        <div className="absolute inset-0">
+          {PROJECTS.map((proj, i) => (
+            <motion.div
+              key={proj.no}
+              className="absolute inset-0"
+              initial={false}
+              animate={{
+                clipPath:
+                  i === active ? "inset(0% 0% 0% 0%)" : "inset(50% 0% 50% 0%)",
+                opacity: i === active ? 1 : 0,
+              }}
+              transition={{ duration: 1.1, ease: [0.83, 0, 0.17, 1] }}
             >
               <img
-                src={p.img}
-                alt={p.name}
+                src={proj.img}
+                alt={proj.name}
                 className="h-full w-full object-cover"
-                style={{ filter: "grayscale(100%) contrast(1.05) brightness(0.85)" }}
+                style={{ filter: "grayscale(100%) contrast(1.1) brightness(0.7) sepia(0.15)" }}
               />
-            </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/30 to-ink/60" />
+            </motion.div>
           ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/30 to-ink/70" />
         </div>
 
         {/* meta header */}
         <div className="absolute top-0 left-0 right-0 px-6 md:px-12 pt-28 flex items-center justify-between z-10">
-          <div className="label-meta text-bone/60">02 — Selected Works</div>
-          <div className="label-meta text-bone/60">
-            {String(active + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
-          </div>
-        </div>
-
-        {/* content */}
-        <div className="relative z-10 h-full flex items-end md:items-center px-6 md:px-12 pb-16">
-          <div className="grid grid-cols-12 gap-8 w-full">
-            <div className="col-span-12 md:col-start-7 md:col-span-6 lg:col-start-8 lg:col-span-5">
-              {PROJECTS.map((p, i) => (
-                <div
-                  key={p.no}
-                  className="absolute transition-all duration-700 ease-out"
-                  style={{
-                    opacity: i === active ? 1 : 0,
-                    transform: i === active ? "translateY(0)" : "translateY(2.5rem)",
-                    pointerEvents: i === active ? "auto" : "none",
-                  }}
-                >
-                  <div className="label-meta text-warm mb-6">Project № {p.no}</div>
-                  <h3 className="font-display text-5xl md:text-7xl leading-[0.95] mb-6">{p.name}</h3>
-                  <div className="label-meta text-bone/70 mb-8">
-                    {p.typology}&nbsp;&nbsp;·&nbsp;&nbsp;{p.city}&nbsp;&nbsp;·&nbsp;&nbsp;{p.year}
-                  </div>
-                  <div className="text-sm font-light leading-relaxed text-bone/80 max-w-md mb-6">
-                    {p.desc}
-                  </div>
-                  <div className="label-meta text-bone/50">{p.stats}</div>
-                </div>
-              ))}
+          <div className="label-meta text-paper/60">02 — Selected Works</div>
+          {/* circular dial */}
+          <div className="relative w-16 h-16">
+            <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+              <circle cx="32" cy="32" r="28" stroke="rgba(239,236,228,0.18)" strokeWidth="1" fill="none" />
+              <motion.circle
+                cx="32"
+                cy="32"
+                r="28"
+                stroke="var(--clay)"
+                strokeWidth="1.5"
+                fill="none"
+                style={{ pathLength: dialLength }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center label-meta text-paper">
+              {String(active + 1).padStart(2, "0")}
             </div>
           </div>
         </div>
 
-        {/* progress rail */}
-        <div className="absolute right-6 md:right-10 top-1/2 -translate-y-1/2 h-64 w-px bg-bone/15">
-          <div
-            className="absolute top-0 left-0 w-px bg-bone transition-[height] duration-300"
-            style={{ height: `${progress * 100}%` }}
-          />
+        {/* content */}
+        <div className="relative z-10 h-full flex items-end md:items-center px-6 md:px-12 pb-20">
+          <div className="grid grid-cols-12 gap-8 w-full max-w-[1600px] mx-auto">
+            <div className="col-span-12 md:col-start-7 md:col-span-6 lg:col-start-7 lg:col-span-6">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={p.no}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="label-meta text-clay mb-6">Project № {p.no}</div>
+                  <h3 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.92] mb-8 tracking-[-0.04em]">
+                    <SplitText text={p.name} by="char" stagger={0.025} duration={0.8} once={false} />
+                  </h3>
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-px bg-paper/40 mb-6 origin-left"
+                  />
+                  <div className="label-meta text-paper/70 mb-8">
+                    {p.typology}&nbsp;&nbsp;·&nbsp;&nbsp;{p.city}&nbsp;&nbsp;·&nbsp;&nbsp;{p.year}
+                  </div>
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.9, delay: 0.5 }}
+                    className="text-base font-light leading-relaxed text-paper/85 max-w-md mb-6"
+                  >
+                    {p.desc}
+                  </motion.p>
+                  <div className="label-meta text-paper/50">{p.stats}</div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        {/* progress segments */}
+        <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+          {PROJECTS.map((_, i) => (
+            <div
+              key={i}
+              className="w-px h-16 bg-paper/15 relative overflow-hidden"
+            >
+              <motion.div
+                className="absolute inset-0 bg-clay origin-top"
+                animate={{ scaleY: i <= active ? 1 : 0 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>
