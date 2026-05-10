@@ -372,7 +372,7 @@ export function Hero() {
               </Line>
 
               {/* morph word */}
-              <span className="block h-[0.95em] relative overflow-hidden text-[13vw] md:text-[7.6vw] lg:text-[6.8vw] -mt-1">
+              <span className="block h-[0.95em] relative overflow-hidden text-[9vw] md:text-[5.6vw] lg:text-[5vw] -mt-1">
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={MORPH_WORDS[wordIdx]}
