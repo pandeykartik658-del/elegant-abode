@@ -358,7 +358,7 @@ export function Hero() {
 
             <div className="font-fraunces leading-[0.95] tracking-[-0.025em]" style={{ fontVariationSettings: '"wght" 350, "opsz" 144, "SOFT" 30' }}>
               <Line delay={1.0}>
-                <span className="block text-[13vw] md:text-[7.6vw] lg:text-[6.8vw] uppercase text-ink">
+                <span className="block text-[9vw] md:text-[5.6vw] lg:text-[5vw] uppercase text-ink whitespace-nowrap">
                   Architecture
                 </span>
               </Line>
